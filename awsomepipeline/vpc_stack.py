@@ -11,4 +11,4 @@ class VpcStack(core.Stack):
         if from_vpc_name is not None:
             self.vpc = ec2.Vpc.from_lookup(self, "vpc", vpc_name=from_vpc_name)
         else:
-            self._vpc = ec2.Vpc(self, "vpc", max_azs=2)
+            self.vpc = ec2.Vpc(self, "vpc", max_azs=2)
