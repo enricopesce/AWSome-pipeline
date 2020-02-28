@@ -12,7 +12,7 @@ phases:
       - 'pip install -r requirements.txt'
   build:
     commands:
-      - 'cdk deploy "*" --context env=$ENV --require-approval never'
+      - 'cdk deploy "*" --context stack=$ENV --require-approval never'
 cache:
   paths:
   - '/~/.docker-cache/**/*'
