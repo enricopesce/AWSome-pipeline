@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./code:/var/www/app
+    environment:
+      - ENV=local
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+      args:
+        - FCGI_HOST=app
+    expose:
+      - "80"
+    ports:
+      - "80:80"
+    environment:
+      - ENV=local
