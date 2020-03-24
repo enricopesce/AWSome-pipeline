@@ -2,7 +2,7 @@ from aws_cdk import (
     core,
     aws_ecs as ecs,
     aws_ecs_patterns as ecs_patterns,
-    aws_ecr_assets as ecr_assets,
+    aws_ecr_assets as ecr_assets
 )
 
 class WebAppStack(core.Stack):
@@ -29,10 +29,8 @@ class WebAppStack(core.Stack):
         service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self, "fargate",
             cluster=cluster,
-            cpu=512,
             desired_count=1,
             task_image_options=alb_options,
-            memory_limit_mib=1024,
             public_load_balancer=True,
             listener_port=80
         )
