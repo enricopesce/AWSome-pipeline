@@ -54,7 +54,7 @@ Deploy the pipeline:
 ```bash
 export AWS_PROFILE="profilename"
 export AWS_DEFAULT_REGION="eu-west-1"
-cdk deploy "*" --context env=pipeline
+cdk deploy "*" --context stack=pipeline
 ```
 
 Local test:
