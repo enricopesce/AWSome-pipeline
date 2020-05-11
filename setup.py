@@ -26,7 +26,8 @@ setuptools.setup(
         "aws_cdk.aws_codebuild",
         "aws_cdk.aws_codepipeline_actions",
         "aws_cdk.aws_codebuild",
-        "aws_cdk.aws_elasticloadbalancingv2"
+        "aws_cdk.aws_elasticloadbalancingv2",
+        "pygit2"
     ],
 
     python_requires=">=3.7",

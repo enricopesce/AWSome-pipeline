@@ -2,12 +2,14 @@ from aws_cdk import (
     core,
     aws_ecs as ecs,
     aws_ecs_patterns as ecs_patterns,
-    aws_ecr_assets as ecr_assets
+    aws_ecr_assets as ecr_assets,
+    aws_ec2 as ec2
 )
+
 
 class WebAppStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, *, vpc="", health_check_path="/",
+    def __init__(self, scope: core.Construct, id: str, vpc: ec2.IVpc, *, health_check_path="/",
                  env_level="prd", **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
@@ -46,7 +48,7 @@ class WebAppStack(core.Stack):
 
         service.target_group.enable_cookie_stickiness(core.Duration.hours(1))
 
-        service.target_group.set_attribute("deregistration_delay.timeout_seconds","10")
+        service.target_group.set_attribute("deregistration_delay.timeout_seconds", "10")
 
         service.task_definition.add_container(
             "app",

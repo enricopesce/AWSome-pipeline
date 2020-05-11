@@ -8,10 +8,11 @@ from aws_cdk import (
     core
 )
 
+
 class PipelineStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, *, git_token_key="", github_owner="",
-                 github_repo="", github_branch="", **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, git_token_key: str, github_owner: str, github_repo: str,
+                 github_branch: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         role = iam.Role(
