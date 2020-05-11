@@ -9,7 +9,7 @@ from awsomepipeline.application_stack import WebAppStack
 from awsomepipeline.pipeline_stack import PipelineStack
 from awsomepipeline.vpc_stack import VpcStack
 
-WORKING_BRANCH = os.environ.get('CODEBUILD_RESOLVED_SOURCE_VERSION', Repository('.').head.shorthand)
+WORKING_BRANCH = "issue-6"
 
 PROJECT_NAME = "awsome"
 
