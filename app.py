@@ -9,9 +9,10 @@ from awsomepipeline.application_stack import WebAppStack
 from awsomepipeline.pipeline_stack import PipelineStack
 from awsomepipeline.vpc_stack import VpcStack
 
-WORKING_BRANCH = os.environ.get('CODEBUILD_WEBHOOK_BASE_REF', Repository('.').head.shorthand)
+WORKING_BRANCH = os.environ.get('CODEBUILD_SOURCE_VERSION', Repository('.').head.shorthand)
 
 PROJECT_NAME = "awsome"
+
 
 def name(suffix: str):
     return PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
