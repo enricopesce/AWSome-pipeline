@@ -64,16 +64,23 @@ class WebAppStack(core.Stack):
 
         scalable_target = service.service.auto_scale_task_count(max_capacity=20)
 
+        scalable_target.scale_on_request_count(
+            "RequestCountScaling",
+            requests_per_target=1000,
+            scale_in_cooldown=core.Duration.seconds(60),
+            scale_out_cooldown=core.Duration.seconds(10)
+        )
+
         scalable_target.scale_on_cpu_utilization(
             "CpuScaling",
-            target_utilization_percent=50,
+            target_utilization_percent=90,
             scale_in_cooldown=core.Duration.seconds(60),
             scale_out_cooldown=core.Duration.seconds(10)
         )
 
         scalable_target.scale_on_memory_utilization(
             "MemoryScaling",
-            target_utilization_percent=80,
+            target_utilization_percent=90,
             scale_in_cooldown=core.Duration.seconds(60),
             scale_out_cooldown=core.Duration.seconds(10)
         )

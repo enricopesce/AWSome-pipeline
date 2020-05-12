@@ -32,6 +32,7 @@ context = app.node.try_get_context("stack")
 if context == "prd" or context == "stg":
     stack_vpc = VpcStack(app,
                          name("vpc"),
+                         from_vpc_name="VPC-RD",
                          env=env)
     if context == "prd":
         WebAppStack(app,
