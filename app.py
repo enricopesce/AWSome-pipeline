@@ -9,7 +9,10 @@ from awsomepipeline.application_stack import WebAppStack
 from awsomepipeline.pipeline_stack import PipelineStack
 from awsomepipeline.vpc_stack import VpcStack
 
-WORKING_BRANCH = os.environ.get('CODEBUILD_RESOLVED_SOURCE_VERSION', Repository('.').head.shorthand)
+WORKING_BRANCH = os.environ.get('WORKING_BRANCH')
+
+if WORKING_BRANCH is None:
+    WORKING_BRANCH = Repository('.').head.shorthand
 
 PROJECT_NAME = "awsome"
 
@@ -27,7 +30,9 @@ app = core.App()
 context = app.node.try_get_context("stack")
 
 if context == "prd" or context == "stg":
-    stack_vpc = VpcStack(app, name("vpc"), env=env)
+    stack_vpc = VpcStack(app,
+                         name("vpc"),
+                         env=env)
     if context == "prd":
         WebAppStack(app,
                     name("prd"),
