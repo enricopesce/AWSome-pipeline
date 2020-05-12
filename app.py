@@ -9,7 +9,11 @@ from awsomepipeline.application_stack import WebAppStack
 from awsomepipeline.pipeline_stack import PipelineStack
 from awsomepipeline.vpc_stack import VpcStack
 
-WORKING_BRANCH = os.environ.get('WORKING_BRANCH', Repository('.').head.shorthand)
+WORKING_BRANCH = os.environ.get('WORKING_BRANCH')
+
+if WORKING_BRANCH is None:
+    WORKING_BRANCH = Repository('.').head.shorthand
+
 PROJECT_NAME = "awsome"
 
 
