@@ -56,7 +56,8 @@ class PipelineStack(core.Stack):
             input=source_output,
             outputs=[staging_output],
             environment_variables={
-                "ENV": {"value": "stg"}
+                "ENV": {"value": "stg"},
+                "WORKING_BRANCH": {"value": github_branch}
             }
         )
 
@@ -70,7 +71,8 @@ class PipelineStack(core.Stack):
             input=source_output,
             outputs=[production_output],
             environment_variables={
-                "ENV": {"value": "prd"}
+                "ENV": {"value": "prd"},
+                "WORKING_BRANCH": {"value": github_branch}
             }
         )
 
