@@ -67,6 +67,7 @@ class WebAppStack(core.Stack):
         scalable_target.scale_on_request_count(
             "RequestCountScaling",
             requests_per_target=1000,
+            target_group=service.target_group,
             scale_in_cooldown=core.Duration.seconds(60),
             scale_out_cooldown=core.Duration.seconds(10)
         )
