@@ -8,10 +8,11 @@ from aws_cdk import (
     core
 )
 
+
 class PipelineStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, *, git_token_key="", github_owner="",
-                 github_repo="", github_branch="", **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, git_token_key: str, github_owner: str, github_repo: str,
+                 github_branch: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         role = iam.Role(
@@ -55,7 +56,8 @@ class PipelineStack(core.Stack):
             input=source_output,
             outputs=[staging_output],
             environment_variables={
-                "ENV": {"value": "stg"}
+                "ENV": {"value": "stg"},
+                "WORKING_BRANCH": {"value": github_branch}
             }
         )
 
@@ -69,7 +71,8 @@ class PipelineStack(core.Stack):
             input=source_output,
             outputs=[production_output],
             environment_variables={
-                "ENV": {"value": "prd"}
+                "ENV": {"value": "prd"},
+                "WORKING_BRANCH": {"value": github_branch}
             }
         )
 
@@ -80,3 +83,10 @@ class PipelineStack(core.Stack):
         pipeline.add_stage(stage_name="Staging", actions=[staging_action])
         pipeline.add_stage(stage_name="Approval", actions=[manual_approval_action])
         pipeline.add_stage(stage_name="Production", actions=[production_action])
+
+        core.CfnOutput(self, "LinkCodePipelinePage", value="https://"
+                                               + self.region
+                                               + ".console.aws.amazon.com/codesuite/"
+                                               + "codepipeline/pipelines/"
+                                               + pipeline.pipeline_name
+                                               + "/view?region=" + self.region)

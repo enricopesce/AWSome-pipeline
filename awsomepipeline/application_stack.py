@@ -3,11 +3,13 @@ from aws_cdk import (
     aws_ecs as ecs,
     aws_ecs_patterns as ecs_patterns,
     aws_ecr_assets as ecr_assets,
+    aws_ec2 as ec2
 )
+
 
 class WebAppStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, *, vpc="", health_check_path="/",
+    def __init__(self, scope: core.Construct, id: str, vpc: ec2.IVpc, *, health_check_path="/",
                  env_level="prd", **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
@@ -29,10 +31,8 @@ class WebAppStack(core.Stack):
         service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self, "fargate",
             cluster=cluster,
-            cpu=512,
             desired_count=1,
             task_image_options=alb_options,
-            memory_limit_mib=1024,
             public_load_balancer=True,
             listener_port=80
         )
@@ -48,7 +48,7 @@ class WebAppStack(core.Stack):
 
         service.target_group.enable_cookie_stickiness(core.Duration.hours(1))
 
-        service.target_group.set_attribute("deregistration_delay.timeout_seconds","10")
+        service.target_group.set_attribute("deregistration_delay.timeout_seconds", "10")
 
         service.task_definition.add_container(
             "app",
@@ -64,16 +64,33 @@ class WebAppStack(core.Stack):
 
         scalable_target = service.service.auto_scale_task_count(max_capacity=20)
 
+        scalable_target.scale_on_request_count(
+            "RequestCountScaling",
+            requests_per_target=1000,
+            target_group=service.target_group,
+            scale_in_cooldown=core.Duration.seconds(60),
+            scale_out_cooldown=core.Duration.seconds(10)
+        )
+
         scalable_target.scale_on_cpu_utilization(
             "CpuScaling",
-            target_utilization_percent=50,
+            target_utilization_percent=90,
             scale_in_cooldown=core.Duration.seconds(60),
             scale_out_cooldown=core.Duration.seconds(10)
         )
 
         scalable_target.scale_on_memory_utilization(
             "MemoryScaling",
-            target_utilization_percent=80,
+            target_utilization_percent=90,
             scale_in_cooldown=core.Duration.seconds(60),
             scale_out_cooldown=core.Duration.seconds(10)
         )
+
+        core.CfnOutput(self, "LinkEcsClusterPage", value="https://"
+                                                         + self.region
+                                                         + ".console.aws.amazon.com/ecs/"
+                                                         + "home?region="
+                                                         + self.region
+                                                         + "#/clusters/"
+                                                         + cluster.cluster_name
+                                                         + "/services")

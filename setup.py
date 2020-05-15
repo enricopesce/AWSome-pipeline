@@ -19,7 +19,6 @@ setuptools.setup(
     packages=setuptools.find_packages(where="awsomepipeline"),
 
     install_requires=[
-        "boto3",
         "aws-cdk.core",
         "aws-cdk.aws_ec2",
         "aws-cdk.aws_ecs",
@@ -28,7 +27,7 @@ setuptools.setup(
         "aws_cdk.aws_codepipeline_actions",
         "aws_cdk.aws_codebuild",
         "aws_cdk.aws_elasticloadbalancingv2",
-        "aws_cdk.aws_ssm"
+        "pygit2"
     ],
 
     python_requires=">=3.7",
