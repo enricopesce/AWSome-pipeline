@@ -25,6 +25,12 @@ Install the Python dependencies
 pip install -r requirements.txt
 ```
 
+Upgrade previous installed CDK
+```bash
+npm install -g aws-cdk
+pip install --upgrade aws-cdk.core
+```
+
 Authenticate in your AWS account:
 
 > Follow this guide: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)

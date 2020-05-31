@@ -3,18 +3,31 @@ from aws_cdk import (
     aws_ecs as ecs,
     aws_ecs_patterns as ecs_patterns,
     aws_ecr_assets as ecr_assets,
-    aws_ec2 as ec2
 )
+
+from vpc_stack import VpcStack
+import os
 
 
 class WebAppStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, vpc: ec2.IVpc, *, health_check_path="/",
-                 env_level="prd", **kwargs) -> None:
-        super().__init__(scope, id, **kwargs)
+    def get_root_path(self):
+        current_file = os.path.abspath(os.path.dirname(__file__))
+        parent_of_parent_dir = os.path.join(current_file, '../../')
+        return parent_of_parent_dir
 
-        web_asset = ecr_assets.DockerImageAsset(self, 'web_asset', directory="docker", file="web/Dockerfile")
-        app_asset = ecr_assets.DockerImageAsset(self, 'app_asset', directory="docker", file="app/Dockerfile")
+    def __init__(self, scope: core.Construct, id: str, *, from_vpc_name=None, health_check_path="/",
+                 env_level="prd", env=None, **kwargs) -> None:
+        super().__init__(scope, id, env=env, **kwargs)
+
+        web_asset = ecr_assets.DockerImageAsset(self, 'web_asset',
+                                                directory=self.get_root_path(),
+                                                file="docker/web/Dockerfile")
+        app_asset = ecr_assets.DockerImageAsset(self, 'app_asset',
+                                                directory=self.get_root_path(),
+                                                file="docker/app/Dockerfile")
+
+        vpc = VpcStack(self, "vpc", from_vpc_name=from_vpc_name, env=env).vpc
 
         cluster = ecs.Cluster(self, "Cluster", vpc=vpc)
 

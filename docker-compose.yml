@@ -2,8 +2,8 @@ version: "3.7"
 services:
   app:
     build:
-      context: .
-      dockerfile: app/Dockerfile
+      context: ./
+      dockerfile: docker/app/Dockerfile
     expose:
       - "8080"
     ports:
@@ -14,8 +14,8 @@ services:
       - ENV=local
   web:
     build:
-      context: .
-      dockerfile: web/Dockerfile
+      context: ./
+      dockerfile: docker/web/Dockerfile
       args:
         - FCGI_HOST=app
     expose:

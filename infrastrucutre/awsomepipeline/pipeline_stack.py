@@ -33,7 +33,7 @@ class PipelineStack(core.Stack):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_2_0,
                 privileged=True
-                ),
+            ),
             role=role
         )
 
@@ -85,8 +85,8 @@ class PipelineStack(core.Stack):
         pipeline.add_stage(stage_name="Production", actions=[production_action])
 
         core.CfnOutput(self, "LinkCodePipelinePage", value="https://"
-                                               + self.region
-                                               + ".console.aws.amazon.com/codesuite/"
-                                               + "codepipeline/pipelines/"
-                                               + pipeline.pipeline_name
-                                               + "/view?region=" + self.region)
+                                                           + self.region
+                                                           + ".console.aws.amazon.com/codesuite/"
+                                                           + "codepipeline/pipelines/"
+                                                           + pipeline.pipeline_name
+                                                           + "/view?region=" + self.region)

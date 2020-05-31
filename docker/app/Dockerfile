@@ -1,7 +1,7 @@
 FROM python:alpine
 
 ARG CODE_DIR=./code
-ARG DOCKER_DIR=./app
+ARG DOCKER_DIR=./docker/app
 
 RUN mkdir -p /var/www/app
 
