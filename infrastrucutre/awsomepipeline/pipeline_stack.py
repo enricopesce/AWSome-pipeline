@@ -28,7 +28,7 @@ class PipelineStack(core.Stack):
         cdk_project = codebuild.PipelineProject(
             self,
             "Codebuild",
-            build_spec=codebuild.BuildSpec.from_source_filename("codebuild/buildspec.yaml"),
+            build_spec=codebuild.BuildSpec.from_source_filename("infrastructure/codebuild/buildspec.yaml"),
             cache=codebuild.Cache.bucket(s3.Bucket(self, "Bucket")),
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_2_0,
