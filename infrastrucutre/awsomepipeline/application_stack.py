@@ -9,22 +9,23 @@ from vpc_stack import VpcStack
 import os
 
 
-class WebAppStack(core.Stack):
+def get_root_path():
+    current_file = os.path.abspath(os.path.dirname(__file__))
+    parent_of_parent_dir = os.path.join(current_file, '../../')
+    return parent_of_parent_dir
 
-    def get_root_path(self):
-        current_file = os.path.abspath(os.path.dirname(__file__))
-        parent_of_parent_dir = os.path.join(current_file, '../../')
-        return parent_of_parent_dir
+
+class WebAppStack(core.Stack):
 
     def __init__(self, scope: core.Construct, id: str, *, from_vpc_name=None, health_check_path="/",
                  env_level="prd", env=None, **kwargs) -> None:
         super().__init__(scope, id, env=env, **kwargs)
 
         web_asset = ecr_assets.DockerImageAsset(self, 'web_asset',
-                                                directory=self.get_root_path(),
+                                                directory=get_root_path(),
                                                 file="docker/web/Dockerfile")
         app_asset = ecr_assets.DockerImageAsset(self, 'app_asset',
-                                                directory=self.get_root_path(),
+                                                directory=get_root_path(),
                                                 file="docker/app/Dockerfile")
 
         vpc = VpcStack(self, "vpc", from_vpc_name=from_vpc_name, env=env).vpc
