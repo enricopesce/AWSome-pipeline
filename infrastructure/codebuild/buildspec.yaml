@@ -2,8 +2,8 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      docker: 18
-      nodejs: 10
+      docker: 19
+      nodejs: 12
       python: 3.7
   pre_build:
     commands:
@@ -13,6 +13,7 @@ phases:
       - 'pip install -r requirements.txt'
   build:
     commands:
+      - "cd infrastructure"
       - 'cdk deploy "*" --context stack=$ENV --require-approval never'
 cache:
   paths:

@@ -31,7 +31,7 @@ class PipelineStack(core.Stack):
             build_spec=codebuild.BuildSpec.from_source_filename("infrastructure/codebuild/buildspec.yaml"),
             cache=codebuild.Cache.bucket(s3.Bucket(self, "Bucket")),
             environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_2_0,
+                build_image=codebuild.LinuxBuildImage.STANDARD_4_0,
                 privileged=True
             ),
             role=role
