@@ -13,7 +13,6 @@ phases:
       - 'pip install -r requirements.txt'
   build:
     commands:
-      - "cd infrastructure"
       - 'cdk deploy "*" --context stack=$ENV --require-approval never'
 cache:
   paths:
