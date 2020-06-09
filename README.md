@@ -1,17 +1,37 @@
-# AWSome Pipeline
+# Devops Pipeline
 
-> Example how with [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/home.html) you can deploy a Python continuous delivery
+> Example how with [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/home.html) you can deploy a continuous delivery
 > pipeline using [AWS CodePipeline](https://aws.amazon.com/codepipeline/), [AWS CodeBuild](https://aws.amazon.com/codebuild/) and
 > [AWS Fargate](https://aws.amazon.com/fargate/).
 > I have included all the best practices with a strong focus on the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle).
-
-> The infrastructure code is written in [Python](https://www.python.org/). The infrastructure executes a [sidecar](https://aws.amazon.com/blogs/compute/nginx-reverse-proxy-sidecar-container-on-amazon-ecs/) 
+> The infrastructure code is written in [TypeScript](https://www.typescriptlang.org/). The infrastructure is a [sidecar](https://aws.amazon.com/blogs/compute/nginx-reverse-proxy-sidecar-container-on-amazon-ecs/)
 > with [Nginx](http://nginx.org/) as proxy and a [Flask](https://palletsprojects.com/p/flask/) "hello world" application on [Gunicorn](https://gunicorn.org/)
 
+## Folder structure
 
-### Installation and requirements:
+```
+code
+docker
+infrastructure
+```
 
-> You need to install a minimal Python 3.7, Node 10 and AWS CLI as dependencies in you local environment
+### code
+
+> dedicated to Flask code
+
+### docker
+
+> dedicated to Docker definitions: sidecard of Nginx + Gunicorn
+
+### infrastructure
+
+> dedicated to AWS CDK infrastructure definition
+
+## Installation and requirements
+
+```bash
+cd infrastructure
+```
 
 Install the CDK framework
 
@@ -19,10 +39,10 @@ Install the CDK framework
 npm install -g aws-cdk
 ```
 
-Install the Python dependencies
+Install the dependencies
 
 ```bash
-pip install -r requirements.txt
+npm install
 ```
 
 Authenticate in your AWS account:
@@ -37,7 +57,7 @@ cdk bootstrap --region eu-west-1
 
 Configure GitHub Token
 
-> Create a [personal access token in GitHub](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) 
+> Create a [personal access token in GitHub](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
 > and store it in [AWS SecretsManager](https://aws.amazon.com/secrets-manager/). Needed to configure your repo webhooks.
 
 ```bash
@@ -49,15 +69,41 @@ aws secretsmanager create-secret \
 
 ## Usage
 
-Deploy the pipeline:
+The first step is exporting the AWS variables:
 
 ```bash
 export AWS_PROFILE="profilename"
 export AWS_DEFAULT_REGION="eu-west-1"
-cdk deploy "*" --context stack=pipeline
 ```
 
-Local test:
+Deploy the pipeline:
+
+```bash
+cdk deploy "*" --context tier=pipeline
+```
+
+Deploy staging env from your computer:
+
+```bash
+cdk deploy "*" --context tier=stg
+```
+
+Deploy production env from your computer:
+
+```bash
+cdk deploy "*" --context tier=prd
+```
+
+## Useful commands
+
+* `npm run build`   compile typescript to js
+* `npm run watch`   watch for changes and compile
+* `npm run test`    perform the jest unit tests
+* `cdk deploy`      deploy this stack to your default AWS account/region
+* `cdk diff`        compare deployed stack with current state
+* `cdk synth`       emits the synthesized CloudFormation template
+
+Local run:
 
 > You can try locally the docker sidecar with the following conmmands:
 

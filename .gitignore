@@ -1,6 +1,3 @@
-.idea
-venv
-cdk.out
-cdk.context.json
 *.egg-info
 __pycache__
+.DS_Store
