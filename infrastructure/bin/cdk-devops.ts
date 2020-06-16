@@ -25,17 +25,22 @@ const context = app.node.tryGetContext('tier')
 
 function name(suffix: string) {
     return PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
+}
 
-}var vpc
+var vpc
 
 
 switch (context) {
     case 'pipeline':
         new PipelineStack(app, name('pipeline'), 'my_secret_token', 'enricopesce', 'AWSome-pipeline', WORKING_BRANCH, { env: env })
         break;
+    case 'stg':
+        vpc = new VpcStack(app, name('vpc'), undefined, { env: env }).vpc
+        new ApplicationStack(app, name('stg'), vpc, 'stg', '/', { env: env })
+        break;
     case 'prd':
         vpc = new VpcStack(app, name('vpc'), undefined, { env: env }).vpc
-        new ApplicationStack(app, name('prd'), vpc, 'prd', '/', { env: env })
+        new ApplicationStack(app, name('stg'), vpc, 'stg', '/', { env: env })
         break;
     default:
         console.log('Please define the tier context: prd | stg | pipeline. es: --context tier=pipeline')
