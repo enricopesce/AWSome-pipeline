@@ -1,0 +1,43 @@
+{
+    "Transform": [
+        "AWS::CodeDeployBlueGreen"
+    ],
+    "Hooks": {
+        "CodeDeployBlueGreenHook": {
+            "Properties": {
+                "TrafficRoutingConfig": {
+                    "Type": "AllAtOnce"
+                },
+                "Applications": [
+                    {
+                        "Target": {
+                            "Type": "AWS::ECS::Service",
+                            "LogicalID": "ECSDemoService"
+                        },
+                        "ECSAttributes": {
+                            "TaskDefinitions": [
+                                "BlueTaskDefinition",
+                                "GreenTaskDefinition"
+                            ],
+                            "TaskSets": [
+                                "BlueTaskSet",
+                                "GreenTaskSet"
+                            ],
+                            "TrafficRouting": {
+                                "ProdTrafficRoute": {
+                                    "Type": "AWS::ElasticLoadBalancingV2::Listener",
+                                    "LogicalID": "ALBListenerProdTraffic"
+                                },
+                                "TargetGroups": [
+                                    "ALBTargetGroupBlue",
+                                    "ALBTargetGroupGreen"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "Type": "AWS::CodeDeploy::BlueGreen"
+        }
+    }
+}
