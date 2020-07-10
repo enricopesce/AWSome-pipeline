@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import 'source-map-support/register'
 import * as cdk from '@aws-cdk/core'
-import { VpcStack } from '../lib/vpc-stack'
 import { PipelineStack } from '../lib/pipeline-stack'
 import { ApplicationStack } from '../lib/application-stack'
 
@@ -27,20 +26,15 @@ function name(suffix: string) {
     return PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
 }
 
-var vpc
-
-
 switch (context) {
     case 'pipeline':
         new PipelineStack(app, name('pipeline'), 'my_secret_token', 'enricopesce', 'AWSome-pipeline', WORKING_BRANCH, { env: env })
         break;
     case 'stg':
-        vpc = new VpcStack(app, name('vpc'), undefined, { env: env }).vpc
-        new ApplicationStack(app, name('stg'), vpc, 'stg', '/', { env: env })
+        new ApplicationStack(app, name('stg'), "VPC-RD", 'stg', '/', { env: env })
         break;
     case 'prd':
-        vpc = new VpcStack(app, name('vpc'), undefined, { env: env }).vpc
-        new ApplicationStack(app, name('stg'), vpc, 'stg', '/', { env: env })
+        new ApplicationStack(app, name('stg'), "VPC-RD", 'stg', '/', { env: env })
         break;
     default:
         console.log('Please define the tier context: prd | stg | pipeline. es: --context tier=pipeline')

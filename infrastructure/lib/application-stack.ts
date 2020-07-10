@@ -6,27 +6,43 @@ import * as alb from '@aws-cdk/aws-elasticloadbalancingv2'
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets'
 import * as ec2 from '@aws-cdk/aws-ec2'
 import * as iam from '@aws-cdk/aws-iam'
-import * as fs from "fs";
+import * as fs from "fs"
 
 
 export class ApplicationStack extends cdk.Stack {
-	constructor(scope: cdk.Construct, id: string, vpc: ec2.IVpc, env_level: string = 'prd', health_check_path: string = '/',
+	constructor(scope: cdk.Construct, id: string, vpcname: string, env_level: string = 'prd', health_check_path: string = '/',
 		props?: cdk.StackProps) {
 		super(scope, id, props)
 
-		new cdk.CfnInclude(this, "ExistingInfrastructure", {
-			template: JSON.parse(fs.readFileSync("macro.json").toString())
-		});
+		const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpcname })
+		
+ 		const vpc_id = new cdk.CfnParameter(this, "vpc_id", {
+			type: "String",
+			default: ""
+			})
+ 
+		const subnet1 = new cdk.CfnParameter(this, "subnet1", {
+			type: "String",
+			default: ""
+			})
 
-		/*
+		const subnet2 = new cdk.CfnParameter(this, "subnet2", {
+			type: "String",
+			default: ""
+			})			 
+
+		new cdk.CfnInclude(this, "Macro", {
+			template: JSON.parse(fs.readFileSync("macro.json").toString())
+		})
+
 		const app_asset = new ecr_assets.DockerImageAsset(this, 'app_asset', {
 			directory: path.join(__dirname, '../../'),
 			file: 'docker/app/Dockerfile',
-		})*/
-
+		})
+		
 		const sg = new ec2.CfnSecurityGroup(this, 'ExampleSecurityGroup', {
 			groupDescription: "Security group for ec2 access",
-			vpcId: cdk.Fn.ref("Vpc"),
+			vpcId: vpc.vpcId,
 			securityGroupIngress: [
 				{
 					"ipProtocol": "tcp",
@@ -47,7 +63,7 @@ export class ApplicationStack extends cdk.Stack {
 					"cidrIp": "0.0.0.0/0"
 				}
 			],
-		});
+		})
 
 		new alb.CfnTargetGroup(this, 'ALBTargetGroupBlue', {
 			healthCheckIntervalSeconds: 5,
@@ -69,8 +85,8 @@ export class ApplicationStack extends cdk.Stack {
 			],
 			targetType: "ip",
 			unhealthyThresholdCount: 4,
-			vpcId: cdk.Fn.ref("Vpc")
-		});
+			vpcId: vpc.vpcId
+		})
 
 		new alb.CfnTargetGroup(this, 'ALBTargetGroupGreen', {
 			healthCheckIntervalSeconds: 5,
@@ -92,17 +108,17 @@ export class ApplicationStack extends cdk.Stack {
 			],
 			targetType: "ip",
 			unhealthyThresholdCount: 4,
-			vpcId: cdk.Fn.ref("Vpc")
-		});
-		
+			vpcId: vpc.vpcId
+		})
+
 		new alb.CfnLoadBalancer(this, 'ExampleALB', {
 			scheme: "internet-facing",
 			securityGroups: [
-				cdk.Fn.ref("ExampleSecurityGroup")		
+				cdk.Fn.ref("ExampleSecurityGroup")
 			],
 			subnets: [
-				cdk.Fn.ref("Subnet1"),
-				cdk.Fn.ref("Subnet2"),
+				vpc.publicSubnets[0].subnetId,
+				vpc.publicSubnets[1].subnetId
 			],
 			tags: [
 				{
@@ -113,7 +129,7 @@ export class ApplicationStack extends cdk.Stack {
 			type: "application",
 			ipAddressType: "ipv4",
 		});
-		
+
 		new alb.CfnListener(this, 'ALBListenerProdTraffic', {
 			defaultActions: [
 				{
@@ -132,7 +148,7 @@ export class ApplicationStack extends cdk.Stack {
 			port: 80,
 			protocol: "HTTP",
 		});
-		
+
 		new alb.CfnListenerRule(this, 'ALBListenerProdRule', {
 			actions: [
 				{
@@ -162,31 +178,15 @@ export class ApplicationStack extends cdk.Stack {
 			priority: 1,
 		});
 
-		const task = new iam.CfnRole(this, 'ECSTaskExecutionRole', {
-			assumeRolePolicyDocument: {
-				"version": "2012-10-17",
-				"statement": [
-					{
-						"sid": "",
-						"effect": "Allow",
-						"principal": {
-							"service": "ecs-tasks.amazonaws.com"
-						},
-						"action": "sts:AssumeRole"
-					}
-				]
-			},
-			managedPolicyArns: [
-				"arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-			],
-		});
+		const role = new iam.Role(this, 'role', { assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com') })
+		role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'))
 
 		new ecs.CfnTaskDefinition(this, 'BlueTaskDefinition', {
-			executionRoleArn: task.attrArn,
+			executionRoleArn: role.roleArn,
 			containerDefinitions: [
 				{
 					"name": "DemoApp",
-					"image": "nginxdemos/hello:latest",
+					"image": app_asset.imageUri,
 					"essential": true,
 					"portMappings": [
 						{
@@ -207,7 +207,7 @@ export class ApplicationStack extends cdk.Stack {
 		});
 
 		new ecs.CfnCluster(this, 'ECSDemoCluster');
-		
+
 		new ecs.CfnService(this, 'ECSDemoService', {
 			cluster: cdk.Fn.ref("ECSDemoCluster"),
 			desiredCount: 1,
@@ -226,8 +226,8 @@ export class ApplicationStack extends cdk.Stack {
 						cdk.Fn.ref("ExampleSecurityGroup")
 					],
 					"subnets": [
-						cdk.Fn.ref("Subnet1"),
-						cdk.Fn.ref("Subnet2")
+						vpc.publicSubnets[0].subnetId,
+						vpc.publicSubnets[1].subnetId
 					]
 				}
 			},
@@ -255,8 +255,6 @@ export class ApplicationStack extends cdk.Stack {
 	}
 
 	/**
-
-		  
 			const scalableTarget = fargateService.service.autoScaleTaskCount({
 				maxCapacity: 20,
 				minCapacity: 1

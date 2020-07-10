@@ -4,9 +4,13 @@
     ],
     "Hooks": {
         "CodeDeployBlueGreenHook": {
+            "Type": "AWS::CodeDeploy::BlueGreen",
             "Properties": {
                 "TrafficRoutingConfig": {
                     "Type": "AllAtOnce"
+                },
+                "AdditionalOptions": {
+                    "TerminationWaitTimeInMinutes": 5
                 },
                 "Applications": [
                     {
@@ -36,8 +40,7 @@
                         }
                     }
                 ]
-            },
-            "Type": "AWS::CodeDeploy::BlueGreen"
+            }
         }
     }
 }
