@@ -5,11 +5,16 @@ import * as ecs from '@aws-cdk/aws-ecs'
 import * as ecs_patterns from '@aws-cdk/aws-ecs-patterns'
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets'
 import * as ec2 from '@aws-cdk/aws-ec2'
+import * as dashboards from './dashboards-stack';
 
 export class ApplicationStack extends cdk.Stack {
-	constructor(scope: cdk.Construct, id: string, vpc: ec2.IVpc, env_level: string = 'prd', health_check_path: string = '/',
+	private fargateService: ecs_patterns.ApplicationLoadBalancedFargateService
+
+	constructor(scope: cdk.Construct, id: string, vpc_name: string, env_level: string = 'prd', health_check_path: string = '/',
 		props?: cdk.StackProps) {
 		super(scope, id, props)
+
+		const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpc_name })
 
 		const web_asset = new ecr_assets.DockerImageAsset(this, 'web_asset', {
 			directory: path.join(__dirname, '../../'),
@@ -25,7 +30,7 @@ export class ApplicationStack extends cdk.Stack {
 			vpc: vpc
 		})
 
-		const fargateService = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'fargate', {
+		this.fargateService = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'fargate', {
 			cluster: cluster,
 			desiredCount: 1,
 			taskImageOptions: {
@@ -38,7 +43,7 @@ export class ApplicationStack extends cdk.Stack {
 			listenerPort: 80
 		})
 
-		fargateService.targetGroup.configureHealthCheck({
+		this.fargateService.targetGroup.configureHealthCheck({
 			path: health_check_path,
 			healthyThresholdCount: 2,
 			healthyHttpCodes: '200-399',
@@ -47,11 +52,11 @@ export class ApplicationStack extends cdk.Stack {
 			interval: cdk.Duration.seconds(15)
 		})
 
-		fargateService.targetGroup.enableCookieStickiness(cdk.Duration.hours(1))
+		this.fargateService.targetGroup.enableCookieStickiness(cdk.Duration.hours(1))
 
-		fargateService.targetGroup.setAttribute("deregistration_delay.timeout_seconds", "10")
+		this.fargateService.targetGroup.setAttribute("deregistration_delay.timeout_seconds", "10")
 
-		fargateService.taskDefinition.addContainer('app', {
+		this.fargateService.taskDefinition.addContainer('app', {
 			image: ecs.ContainerImage.fromDockerImageAsset(app_asset),
 			logging: ecs.LogDriver.awsLogs({ streamPrefix: 'fargate' }),
 			environment: {
@@ -59,7 +64,7 @@ export class ApplicationStack extends cdk.Stack {
 			}
 		})
 
-		const scalableTarget = fargateService.service.autoScaleTaskCount({
+		const scalableTarget = this.fargateService.service.autoScaleTaskCount({
 			maxCapacity: 20,
 			minCapacity: 1
 		})
@@ -72,7 +77,7 @@ export class ApplicationStack extends cdk.Stack {
 
 		scalableTarget.scaleOnRequestCount('RequestCountScaling', {
 			requestsPerTarget: 1000,
-			targetGroup: fargateService.targetGroup,
+			targetGroup: this.fargateService.targetGroup,
 			scaleInCooldown: cdk.Duration.seconds(60),
 			scaleOutCooldown: cdk.Duration.seconds(10)
 		})
@@ -82,6 +87,14 @@ export class ApplicationStack extends cdk.Stack {
 			scaleInCooldown: cdk.Duration.seconds(60),
 			scaleOutCooldown: cdk.Duration.seconds(10)
 		})
+
+		const d = new dashboards.DashboardEcsStack(this, "dash", {
+			DashboardName: this.stackName,
+			EcsClusterName: cluster.clusterName,
+			EcsServicName: this.fargateService.service.serviceName,
+			EcsLogStreams: [ this.getLogStream("app"), this.getLogStream("web") ] 
+        })
+
 
 		new cdk.CfnOutput(this, 'LinkEcsClusterPage', {
 			value: "https://"
@@ -94,5 +107,28 @@ export class ApplicationStack extends cdk.Stack {
 				+ "/fargateServices"
 		})
 
+		/*      new cdk.CfnOutput(this, 'LinkCodePipelinePage', {
+					value: "https://"
+						+ this.region
+						+ ".console.aws.amazon.com/cloudwatch/"
+						+ "/home?region=" + this.region
+						+ "#dashboards:name=" + name
+				}) */
 	}
+
+
+    /**
+     * getAppLogStream
+     */
+	private getLogStream(containerName: string): string {
+		const task_def = this.fargateService.service.taskDefinition
+		const container = task_def.node.tryFindChild(containerName) as ecs.ContainerDefinition
+		if (container.logDriverConfig?.options != undefined) {
+			return container.logDriverConfig?.options["awslogs-group"]
+		} else {
+			return ""
+		}
+	}
+
 }
+
