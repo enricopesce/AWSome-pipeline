@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core'
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch'
 import { Construct } from '@aws-cdk/core';
 
@@ -22,13 +21,11 @@ export class DashboardEcsStack extends Construct implements DashboardEcsProps {
         })
 
         dashboard.addWidgets(
-            this.buildEcsWidget('CPUReservation', props),
             this.buildEcsWidget('CPUUtilization', props),
-            this.buildEcsWidget('MemoryReservation', props),
             this.buildEcsWidget('MemoryUtilization', props)
         )
 
-        for (let stream in this.EcsLogStreams) {
+        for (let stream of props.EcsLogStreams) {
             dashboard.addWidgets(
                 this.buildLogWidget(stream)
             )
