@@ -105,21 +105,23 @@ cdk deploy "*" --context tier=stg
  ✅  awsome-master-stg-app
 
 Outputs:
-awsome-master-stg-app.fargateLoadBalancerDNSB13ECB0B = awsom-farga-1KNVPTS0GNV8J-1044923501.eu-west-1.elb.amazonaws.com
+awsome-master-stg-app.fargateLoadBalancerDNSB13ECB0B = awsom-farga-1KNVPTS0GNV8J-XXXXXXXXX.eu-west-1.elb.amazonaws.com
 awsome-master-stg-app.LinkEcsClusterPage = https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/clusters/awsome-master-stg-app-cluster611F8AFF-okLxuoDdfc1o/fargateServices
-awsome-master-stg-app.fargateServiceURL145CCBE8 = http://awsom-farga-1KNVPTS0GNV8J-1044923501.eu-west-1.elb.amazonaws.com
+awsome-master-stg-app.LinkCLoudWatchDashboard = https://eu-west-1.console.aws.amazon.com/cloudwatch//home?region=eu-west-1#dashboards:name=awsome-dashboard-stg-app
+awsome-master-stg-app.fargateServiceURL145CCBE8 = http://awsom-farga-1KNVPTS0GNV8J-XXXXXXXXX.eu-west-1.elb.amazonaws.com
 ```
 
-or you can deploy at your risk the production env from your computer and get the production http endpoints:
+or you can deploy the production env from your computer and get the production http endpoints:
 
 ```bash
 cdk deploy "*" --context tier=prd
  ✅  awsome-master-prd-app
 
 Outputs:
-awsome-master-prd-app.fargateLoadBalancerDNSB13ECB0B = awsom-farga-1KNVPTS0GNV8J-1084923501.eu-west-1.elb.amazonaws.com
+awsome-master-prd-app.fargateLoadBalancerDNSB13ECB0B = awsom-farga-1KNVPTS0GNV8J-XXXXXXXXX.eu-west-1.elb.amazonaws.com
 awsome-master-prd-app.LinkEcsClusterPage = https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/clusters/awsome-master-prd-app-cluster611F8AFF-okLxuoDdfc1o/fargateServices
-awsome-master-prd-app.fargateServiceURL145CCBE8 = http://awsom-farga-1KNVPTS0GNV8J-1084923501.eu-west-1.elb.amazonaws.com
+awsome-master-prd-app.LinkCLoudWatchDashboard = https://eu-west-1.console.aws.amazon.com/cloudwatch//home?region=eu-west-1#dashboards:name=awsome-master-prd-app
+awsome-master-prd-app.fargateServiceURL145CCBE8 = http://awsom-farga-1KNVPTS0GNV8J-XXXXXXXXX.eu-west-1.elb.amazonaws.com
 ```
 
 ## Customize the application code:
