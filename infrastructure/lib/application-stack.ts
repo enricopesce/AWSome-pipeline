@@ -106,7 +106,7 @@ export class ApplicationStack extends cdk.Stack {
 				+ "/fargateServices"
 		})
 
-		new cdk.CfnOutput(this, 'LinkCLoudWatchDashboard', {
+		new cdk.CfnOutput(this, 'LinkCloudWatchDashboard', {
 			value: "https://"
 				+ this.region
 				+ ".console.aws.amazon.com/cloudwatch/"
