@@ -47,12 +47,15 @@ npm install
 
 Authenticate in your AWS account:
 
-> Follow this guide: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+Follow this guide: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 
 Configure GitHub Token
 
-> Create a [personal access token in GitHub](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
-> and store it in [AWS SecretsManager](https://aws.amazon.com/secrets-manager/). Needed to configure your repo webhooks.
+Create a [personal access token in GitHub](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+and store it in [AWS SecretsManager](https://aws.amazon.com/secrets-manager/).
+
+
+Needed to configure your repo webhooks.
 
 ```bash
 aws secretsmanager create-secret \
@@ -81,26 +84,47 @@ edit the app_config.json file for defining the project name and the existing VPC
 }
 ```
 
-Deploy the pipeline:
+Deploy the pipeline an get the codepipeline endpoint:
 
 ```bash
 cdk deploy "*" --context tier=pipeline
+
+ ✅  awsome-master-pipeline
+
+Outputs:
+awsome-master-pipeline.LinkCodePipelinePage = https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/awsome-master-pipeline-PipelineC660917D-11U99LG5Y4H4V/view?region=eu-west-1
 ```
 
-Deploy staging env from your computer:
+The pipeline after the creation and after every commits in the branch assigned will be triggered. It launches the staging env end after a manual approval the production env.
+
+Alternatively you can deploy staging env from your computer and get the staging http endpoints:
 
 ```bash
 cdk deploy "*" --context tier=stg
+
+ ✅  awsome-master-stg-app
+
+Outputs:
+awsome-master-stg-app.fargateLoadBalancerDNSB13ECB0B = awsom-farga-1KNVPTS0GNV8J-1044923501.eu-west-1.elb.amazonaws.com
+awsome-master-stg-app.LinkEcsClusterPage = https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/clusters/awsome-master-stg-app-cluster611F8AFF-okLxuoDdfc1o/fargateServices
+awsome-master-stg-app.fargateServiceURL145CCBE8 = http://awsom-farga-1KNVPTS0GNV8J-1044923501.eu-west-1.elb.amazonaws.com
 ```
 
-Deploy production env from your computer:
+or you can deploy at your risk the production env from your computer and get the production http endpoints:
 
 ```bash
 cdk deploy "*" --context tier=prd
+ ✅  awsome-master-prd-app
+
+Outputs:
+awsome-master-prd-app.fargateLoadBalancerDNSB13ECB0B = awsom-farga-1KNVPTS0GNV8J-1084923501.eu-west-1.elb.amazonaws.com
+awsome-master-prd-app.LinkEcsClusterPage = https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/clusters/awsome-master-prd-app-cluster611F8AFF-okLxuoDdfc1o/fargateServices
+awsome-master-prd-app.fargateServiceURL145CCBE8 = http://awsom-farga-1KNVPTS0GNV8J-1084923501.eu-west-1.elb.amazonaws.com
 ```
 
 ## Customize the application code:
 
 You can customize the code inside the docker/code directory
 
-Have fun!
+## PLEASE GIVE ME FEEDBACKS!!
+## OPEN A GITHUB ISSUE FOR FIX OR REQUEST!
