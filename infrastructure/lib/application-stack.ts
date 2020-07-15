@@ -106,14 +106,6 @@ export class ApplicationStack extends cdk.Stack {
 				+ cluster.clusterName
 				+ "/fargateServices"
 		})
-
-		/*      new cdk.CfnOutput(this, 'LinkCodePipelinePage', {
-					value: "https://"
-						+ this.region
-						+ ".console.aws.amazon.com/cloudwatch/"
-						+ "/home?region=" + this.region
-						+ "#dashboards:name=" + name
-				}) */
 	}
 
 

@@ -35,6 +35,8 @@ export class DashboardEcsStack extends Construct implements DashboardEcsProps {
     private buildEcsWidget(metricName: string, props: DashboardEcsProps, statistic: string = 'avg'): cloudwatch.GraphWidget {
         return new cloudwatch.GraphWidget({
             title: metricName,
+            width: 12,
+            height: 6,
             left: [new cloudwatch.Metric({
                 namespace: 'AWS/ECS',
                 metricName: metricName,
@@ -49,6 +51,8 @@ export class DashboardEcsStack extends Construct implements DashboardEcsProps {
 
     private buildLogWidget(logGroupName: string): cloudwatch.LogQueryWidget {
         return new cloudwatch.LogQueryWidget({
+            width: 24,
+            height: 6,
             logGroupNames: [logGroupName],
             queryLines: [
                 'fields @message'
