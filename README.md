@@ -33,28 +33,26 @@ dedicated to AWS CDK infrastructure definition
 cd infrastructure
 ```
 
-Install the CDK framework
+### Install the CDK framework
 
 ```bash
 npm install -g aws-cdk
 ```
 
-Install the dependencies
+### Install the dependencies
 
 ```bash
 npm install
 ```
 
-Authenticate in your AWS account:
+### Authenticate in your AWS account:
 
 Follow this guide: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 
-Configure GitHub Token
+### Configure GitHub Token:
 
 Create a [personal access token in GitHub](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
 and store it in [AWS SecretsManager](https://aws.amazon.com/secrets-manager/).
-
-
 Needed to configure your repo webhooks.
 
 ```bash
@@ -73,7 +71,7 @@ export AWS_PROFILE="profilename"
 export AWS_DEFAULT_REGION="eu-west-1"
 ```
 
-Configuring the application:
+### Configuring the application:
 
 edit the app_config.json file for defining the project name and the existing VPC
 
@@ -84,7 +82,7 @@ edit the app_config.json file for defining the project name and the existing VPC
 }
 ```
 
-Deploy the pipeline an get the codepipeline endpoint:
+### Deploy the pipeline an get the codepipeline endpoint:
 
 ```bash
 cdk deploy "*" --context tier=pipeline
@@ -95,7 +93,7 @@ Outputs:
 awsome-master-pipeline.LinkCodePipelinePage = https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/awsome-master-pipeline-PipelineC660917D-11U99LG5Y4H4V/view?region=eu-west-1
 ```
 
-The pipeline after the creation and after every commits in the branch assigned will be triggered. It launches the staging env end after a manual approval the production env.
+The pipeline after the creation and after every commits in the branch assigned will be triggered. It launches the staging env end, after a manual approval, the production env.
 
 Alternatively you can deploy staging env from your computer and get the staging http endpoints:
 
