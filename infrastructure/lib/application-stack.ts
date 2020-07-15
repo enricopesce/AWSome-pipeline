@@ -95,7 +95,6 @@ export class ApplicationStack extends cdk.Stack {
 			EcsLogStreams: [ this.getLogStream("app"), this.getLogStream("web") ] 
         })
 
-
 		new cdk.CfnOutput(this, 'LinkEcsClusterPage', {
 			value: "https://"
 				+ this.region
@@ -105,6 +104,14 @@ export class ApplicationStack extends cdk.Stack {
 				+ "#/clusters/"
 				+ cluster.clusterName
 				+ "/fargateServices"
+		})
+
+		new cdk.CfnOutput(this, 'LinkCLoudWatchDashboard', {
+			value: "https://"
+				+ this.region
+				+ ".console.aws.amazon.com/cloudwatch/"
+				+ "/home?region=" + this.region
+				+ "#dashboards:name=" + this.stackName
 		})
 	}
 
