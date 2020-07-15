@@ -94,24 +94,6 @@ Deploy production env from your computer:
 cdk deploy "*" --context tier=prd
 ```
 
-## Useful commands
-
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
-
-Local run:
-
-> You can try locally the docker sidecar with the following conmmands:
-
-```bash
-cd docker
-docker-compose up
-```
-
 Customize the application code:
 
 > You can customize the code inside the docker/code directory

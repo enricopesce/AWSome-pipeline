@@ -21,18 +21,18 @@ const env = {
 }
 
 const app = new cdk.App()
-const context = app.node.tryGetContext('tier')
+const tier = app.node.tryGetContext('tier')
 
 function name(suffix: string) {
     return PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
 }
 
-switch (context) {
+switch (tier) {
     case 'pipeline':
         new PipelineStack(app, name('pipeline'), 'my_secret_token', 'enricopesce', 'AWSome-pipeline', WORKING_BRANCH, { env: env })
         break
     case 'stg':
-        const app_stack = new ApplicationStack(app, name('stg-app'), VPC_NAME, 'stg', '/', { env: env })
+        new ApplicationStack(app, name('stg-app'), VPC_NAME, 'stg', '/', { env: env })
         break
     case 'prd':
         new ApplicationStack(app, name('prd-app'), VPC_NAME, 'prd', '/', { env: env })
