@@ -17,4 +17,4 @@ phases:
       - 'cdk deploy "*" --context tier=$ENV --require-approval never'
 cache:
   paths:
-  - '~/.npm/**/*'
+    - 'infrastructure/node_modules/**/*'

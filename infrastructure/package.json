@@ -13,10 +13,10 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.41.0",
     "@types/jest": "^25.2.3",
-    "@types/node": "^14.0.5",
+    "@types/node": "^14.0.23",
     "aws-cdk": "^1.41.0",
     "jest": "^26.0.1",
-    "ts-jest": "^26.0.0",
+    "ts-jest": "^26.1.2",
     "ts-node": "^8.10.1",
     "typescript": "~3.9.3"
   },

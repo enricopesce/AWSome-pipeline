@@ -1,19 +1,23 @@
 #!/usr/bin/env node
 import 'source-map-support/register'
 import * as cdk from '@aws-cdk/core'
-import { VpcStack } from '../lib/vpc-stack'
 import { PipelineStack } from '../lib/pipeline-stack'
 import { ApplicationStack } from '../lib/application-stack'
 
-const currentGitBranch = require('current-git-branch')
-
-var WORKING_BRANCH = <string>process.env.WORKING_BRANCH
-
-if (WORKING_BRANCH === undefined) {
-    WORKING_BRANCH = <string>currentGitBranch()
+export interface Config {
+    PROJECT_NAME: string
+    VPC_NAME: string
 }
 
-const PROJECT_NAME = 'devops'
+let config: Config = require('../app_config.json');
+
+const currentGitBranch = require('current-git-branch')
+
+let WORKING_BRANCH = process.env.WORKING_BRANCH as string
+
+if (WORKING_BRANCH === undefined) {
+    WORKING_BRANCH = currentGitBranch() as string
+}
 
 const env = {
     account: process.env.CDK_DEFAULT_ACCOUNT,
@@ -21,29 +25,25 @@ const env = {
 }
 
 const app = new cdk.App()
-const context = app.node.tryGetContext('tier')
+const tier = app.node.tryGetContext('tier')
 
 function name(suffix: string) {
-    return PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
+    return config.PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
 }
 
-var vpc
-
-switch (context) {
+switch (tier) {
     case 'pipeline':
         new PipelineStack(app, name('pipeline'), 'my_secret_token', 'enricopesce', 'AWSome-pipeline', WORKING_BRANCH, { env: env })
-        break;
+        break
     case 'stg':
-        vpc = new VpcStack(app, name('vpc'), undefined, { env: env }).vpc
-        new ApplicationStack(app, name('stg'), vpc, 'stg', '/', { env: env })
-        break;
+        new ApplicationStack(app, name('stg-app'), config.VPC_NAME, 'stg', '/', { env: env })
+        break
     case 'prd':
-        vpc = new VpcStack(app, name('vpc'), undefined, { env: env }).vpc
-        new ApplicationStack(app, name('prd'), vpc, 'prd', '/', { env: env })
-        break;
+        new ApplicationStack(app, name('prd-app'), config.VPC_NAME, 'prd', '/', { env: env })
+        break
     default:
         console.log('Please define the tier context: prd | stg | pipeline. es: --context tier=pipeline')
-        break;
+        break
 }
 
 app.synth()
