@@ -82,7 +82,7 @@ edit the app_config.json file for defining the project name and the existing VPC
 }
 ```
 
-### Deploy the pipeline an get the codepipeline endpoint:
+### Deploy the pipeline an get the codepipeline endpoint
 
 ```bash
 cdk deploy "*" --context tier=pipeline
