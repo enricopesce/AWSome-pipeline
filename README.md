@@ -76,6 +76,9 @@ export AWS_PROFILE="profilename"
 export AWS_DEFAULT_REGION="eu-west-1"
 ```
 
+Using an existing VPC or a dedicated
+
+
 Deploy the pipeline:
 
 ```bash

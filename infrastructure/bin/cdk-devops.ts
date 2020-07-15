@@ -12,7 +12,7 @@ if (WORKING_BRANCH === undefined) {
     WORKING_BRANCH = currentGitBranch() as string
 }
 
-const PROJECT_NAME = 'devops'
+const PROJECT_NAME = 'awsomepipeline'
 const VPC_NAME = 'VPC-RD'
 
 const env = {
@@ -37,6 +37,7 @@ switch (tier) {
     case 'prd':
         new ApplicationStack(app, name('prd-app'), VPC_NAME, 'prd', '/', { env: env })
         break
+
     default:
         console.log('Please define the tier context: prd | stg | pipeline. es: --context tier=pipeline')
         break
