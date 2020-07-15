@@ -9,23 +9,23 @@
 
 ## Folder structure
 
-```
+```bash
 code
 docker
 infrastructure
 ```
 
-### code
+### code directory
 
-> dedicated to Flask code
+dedicated to Flask code
 
-### docker
+### docker directory
 
-> dedicated to Docker definitions: sidecard of Nginx + Gunicorn
+dedicated to Docker definitions: sidecard of Nginx + Gunicorn
 
-### infrastructure
+### infrastructure directory
 
-> dedicated to AWS CDK infrastructure definition
+dedicated to AWS CDK infrastructure definition
 
 ## Installation and requirements
 
@@ -49,12 +49,6 @@ Authenticate in your AWS account:
 
 > Follow this guide: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 
-Bootstrap AWS CDK
-
-```bash
-cdk bootstrap --region eu-west-1
-```
-
 Configure GitHub Token
 
 > Create a [personal access token in GitHub](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
@@ -69,15 +63,23 @@ aws secretsmanager create-secret \
 
 ## Usage
 
-The first step is exporting the AWS variables:
+The first step is to exporting the AWS variables to obtain the rights:
 
 ```bash
 export AWS_PROFILE="profilename"
 export AWS_DEFAULT_REGION="eu-west-1"
 ```
 
-Using an existing VPC or a dedicated
+Configuring the application:
 
+edit the app_config.json file for defining the project name and the existing VPC
+
+```json
+{
+    "PROJECT_NAME": "awsome",
+    "VPC_NAME": "default"
+}
+```
 
 Deploy the pipeline:
 
@@ -97,8 +99,8 @@ Deploy production env from your computer:
 cdk deploy "*" --context tier=prd
 ```
 
-Customize the application code:
+## Customize the application code:
 
-> You can customize the code inside the docker/code directory
+You can customize the code inside the docker/code directory
 
 Have fun!
