@@ -4,7 +4,6 @@ import * as iam from '@aws-cdk/aws-iam'
 import * as codebuild from '@aws-cdk/aws-codebuild'
 import * as codepipeline from '@aws-cdk/aws-codepipeline'
 import * as codepipelineActions from '@aws-cdk/aws-codepipeline-actions'
-import * as kms from '@aws-cdk/aws-kms'
 import { AutoDeleteBucket } from '@mobileposse/auto-delete-bucket'
 
 export class PipelineStack extends cdk.Stack {
@@ -15,14 +14,10 @@ export class PipelineStack extends cdk.Stack {
         const role = new iam.Role(this, 'role', { assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com') })
         role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'))
 
-        const key = new kms.Key(this, 'key')
-
         const project = new codebuild.PipelineProject(this, 'pipelineProject', {
             buildSpec: codebuild.BuildSpec.fromSourceFilename('infrastructure/codebuild/buildspec.yaml'),
             cache: codebuild.Cache.bucket(
-                new AutoDeleteBucket(this, 'cache', {
-                    encryptionKey: key,
-                })
+                new AutoDeleteBucket(this, 'cache')
             ),
             environment: {
                 buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
@@ -78,9 +73,7 @@ export class PipelineStack extends cdk.Stack {
             }
         })
 
-        const bucketArtifacts = new AutoDeleteBucket(this, 'artifacts', {
-            encryptionKey: key,
-        })
+        const bucketArtifacts = new AutoDeleteBucket(this, 'artifacts')
 
         const pipeline = new codepipeline.Pipeline(this, "Pipeline", {
             artifactBucket: bucketArtifacts
