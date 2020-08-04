@@ -88,11 +88,17 @@ export class ApplicationStack extends cdk.Stack {
 			scaleOutCooldown: cdk.Duration.seconds(10)
 		})
 
-		const d = new dashboards.DashboardEcsStack(this, "dash", {
+		new dashboards.DashboardEcs(this, "ecsdashboard", {
 			DashboardName: this.stackName,
 			EcsClusterName: cluster.clusterName,
 			EcsServicName: this.fargateService.service.serviceName,
 			EcsLogStreams: [ this.getLogStream("app"), this.getLogStream("web") ] 
+        })
+
+		new dashboards.DashboardAlb(this, "albdashboard", {
+			DashboardName: this.stackName,
+			AlbName: this.fargateService.loadBalancer.loadBalancerFullName,
+			AlbTargetGroupName: this.fargateService.targetGroup.targetGroupFullName
         })
 
 		new cdk.CfnOutput(this, 'LinkEcsClusterPage', {
