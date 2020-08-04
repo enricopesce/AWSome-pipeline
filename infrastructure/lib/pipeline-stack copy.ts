@@ -1,36 +1,45 @@
 import 'source-map-support/register'
 import * as cdk from '@aws-cdk/core'
+import * as iam from '@aws-cdk/aws-iam'
+import * as codebuild from '@aws-cdk/aws-codebuild'
 import * as codepipeline from '@aws-cdk/aws-codepipeline'
-import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
-import * as pipelines from '@aws-cdk/pipelines';
+import * as codepipelineActions from '@aws-cdk/aws-codepipeline-actions'
+import { AutoDeleteBucket } from '@mobileposse/auto-delete-bucket'
 
 export class PipelineStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, gitToken: string, github_owner: string, github_repo: string,
-    github_branch: string, props?: cdk.StackProps) {
-    super(scope, id, props)
+    constructor(scope: cdk.Construct, id: string, gitToken: string, github_owner: string, github_repo: string,
+        github_branch: string, props?: cdk.StackProps) {
+        super(scope, id, props)
 
-    const sourceArtifact = new codepipeline.Artifact();
-    const cloudAssemblyArtifact = new codepipeline.Artifact();
+        const role = new iam.Role(this, 'role', { assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com') })
+        role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'))
 
-    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
-      cloudAssemblyArtifact,
-      sourceAction: new codepipeline_actions.GitHubSourceAction({
-        actionName: 'GitHub_Source',
-        owner: github_owner,
-        repo: github_repo,
-        branch: github_branch,
-        oauthToken: cdk.SecretValue.secretsManager(gitToken),
-        output: sourceArtifact
-      }),
-      synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
-        sourceArtifact,
-        cloudAssemblyArtifact,  
-        buildCommand: 'npm run build',
-        subdirectory: 'infrastructure'
-      }),
-    });
+        const project = new codebuild.PipelineProject(this, 'pipelineProject', {
+            buildSpec: codebuild.BuildSpec.fromSourceFilename('infrastructure/codebuild/buildspec.yaml'),
+            cache: codebuild.Cache.bucket(
+                new AutoDeleteBucket(this, 'cache')
+            ),
+            environment: {
+                buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+                privileged: true
+            },
+            role: role
+        })
 
-    /*     const staging_action = new codepipelineActions.CodeBuildAction({
+        const source_output = new codepipeline.Artifact()
+        const staging_output = new codepipeline.Artifact()
+        const production_output = new codepipeline.Artifact()
+
+        const source_action = new codepipelineActions.GitHubSourceAction({
+            actionName: 'GitHub_Source',
+            owner: github_owner,
+            repo: github_repo,
+            branch: github_branch,
+            oauthToken: cdk.SecretValue.secretsManager(gitToken),
+            output: source_output
+        })
+
+        const staging_action = new codepipelineActions.CodeBuildAction({
             actionName: 'Deliver',
             project: project,
             input: source_output,
@@ -97,6 +106,6 @@ export class PipelineStack extends cdk.Stack {
                 + "codepipeline/pipelines/"
                 + pipeline.pipelineName
                 + "/view?region=" + this.region
-        }) */
-  }
+        })
+    }
 }
