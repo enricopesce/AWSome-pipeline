@@ -27,8 +27,13 @@ export class DashboardAlb extends Construct implements DashboardAlbProps {
         })
 
         dashboard.addWidgets(
-            this.buildAlbWidget('RequestCount', props),
-            this.buildAlbWidget('RequestCountPerTarget', props)
+            this.buildAlbWidget('NewConnectionCount', props, 'sum'),
+            this.buildAlbWidget('ActiveConnectionCount', props, 'sum'), 
+            this.buildAlbWidget('RequestCount', props, 'sum'),
+            this.buildAlbWidget('TargetResponseTime', props),
+            this.buildAlbWidget('RequestCountPerTarget', props, 'sum'),
+            this.buildAlbWidget('TargetConnectionErrorCount', props, 'sum'),
+            this.buildAlbWidget('UnHealthyHostCount', props)
         )
     }
 
