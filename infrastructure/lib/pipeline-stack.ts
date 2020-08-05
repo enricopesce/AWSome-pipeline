@@ -27,12 +27,14 @@ export class PipelineStack extends cdk.Stack {
                 sourceArtifact,
                 cloudAssemblyArtifact,
                 subdirectory: 'infrastructure',
-                environmentVariables: {
-                    'WORKING_BRANCH': {
-                        value: github_branch
+                environment: {
+                    environmentVariables: {
+                        'WORKING_BRANCH': {
+                            value: github_branch
+                        }
                     }
                 }
-            }),
+            })
         });
 
         /*     const staging_action = new codepipelineActions.CodeBuildAction({
