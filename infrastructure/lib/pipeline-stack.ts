@@ -23,6 +23,7 @@ export class PipelineStack extends cdk.Stack {
         output: sourceArtifact
       }),
       synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
+        actionName: 'banana',
         sourceArtifact,
         cloudAssemblyArtifact,
         subdirectory: 'infrastructure'
