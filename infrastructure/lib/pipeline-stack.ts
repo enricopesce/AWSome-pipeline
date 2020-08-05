@@ -26,8 +26,12 @@ export class PipelineStack extends cdk.Stack {
         actionName: 'banana',
         sourceArtifact,
         cloudAssemblyArtifact,
-        subdirectory: 'infrastructure'
-      }),
+        subdirectory: 'infrastructure',
+        environmentVariables: {
+            'WORKING_BRANCH': {
+                value: github_branch
+            }
+      })
     });
 
     /*     const staging_action = new codepipelineActions.CodeBuildAction({
