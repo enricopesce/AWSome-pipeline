@@ -32,11 +32,11 @@ function name(suffix: string) {
     return config.PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
 }
 
-export class CdkpipelinesDemoStage extends cdk.Stage {
+export class ApplicationStage extends cdk.Stage {
     public readonly urlOutput: cdk.CfnOutput;
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props);
-        const service = new ApplicationStack(app, name(id), config.VPC_NAME, id, '/', { env: env })
+        const service = new ApplicationStack(app, name(id), config.VPC_NAME, id, '/')
         this.urlOutput = service.urlOutput;
     }
 }
@@ -72,7 +72,7 @@ export class PipelineStack extends cdk.Stack {
             })
         });
 
-        pipeline.addApplicationStage(new CdkpipelinesDemoStage(this, 'stg', {
+        const staging = pipeline.addApplicationStage(new ApplicationStage(this, 'stg', {
             env: env
         }));
 
