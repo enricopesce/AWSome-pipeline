@@ -36,7 +36,7 @@ export class ApplicationStage extends cdk.Stage {
     public readonly urlOutput: cdk.CfnOutput;
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props);
-        const service = new ApplicationStack(app, name(id), config.VPC_NAME, id, '/')
+        const service = new ApplicationStack(app, name(id), config.VPC_NAME, id, '/', { env: env })
         this.urlOutput = service.urlOutput;
     }
 }
@@ -69,13 +69,12 @@ export class PipelineStack extends cdk.Stack {
                         value: github_branch
                     }
                 }
-            })
+            }),
         });
 
         const staging = pipeline.addApplicationStage(new ApplicationStage(this, 'stg', {
             env: env
         }));
-
     }
 }
 
