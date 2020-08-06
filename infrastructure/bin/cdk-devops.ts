@@ -36,7 +36,7 @@ export class CdkpipelinesDemoStage extends cdk.Stage {
     public readonly urlOutput: cdk.CfnOutput;
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props);
-        const service = new ApplicationStack(app, name('stg-app'), config.VPC_NAME, 'stg', '/', { env: env })
+        const service = new ApplicationStack(app, name(id), config.VPC_NAME, id, '/', { env: env })
         this.urlOutput = service.urlOutput;
     }
 }
@@ -45,9 +45,6 @@ export class PipelineStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, gitToken: string, github_owner: string, github_repo: string,
         github_branch: string, props?: cdk.StackProps) {
         super(scope, id, props)
-
-        /*         const role = new iam.Role(this, 'role', { assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com') })
-                role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess')) */
 
         const sourceArtifact = new codepipeline.Artifact();
         const cloudAssemblyArtifact = new codepipeline.Artifact();
@@ -75,10 +72,9 @@ export class PipelineStack extends cdk.Stack {
             })
         });
 
-
-
-
-
+        pipeline.addApplicationStage(new CdkpipelinesDemoStage(this, 'stg', {
+            env: env
+        }));
 
     }
 }
