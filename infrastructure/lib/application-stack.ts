@@ -9,9 +9,11 @@ import * as dashboards from './dashboards-stack';
 
 export class ApplicationStack extends cdk.Stack {
 	private fargateService: ecs_patterns.ApplicationLoadBalancedFargateService
+	public readonly urlOutput: cdk.CfnOutput;
 
 	constructor(scope: cdk.Construct, id: string, vpc_name: string, env_level: string = 'prd', health_check_path: string = '/',
 		props?: cdk.StackProps) {
+
 		super(scope, id, props)
 
 		const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpc_name })
@@ -119,8 +121,11 @@ export class ApplicationStack extends cdk.Stack {
 				+ "/home?region=" + this.region
 				+ "#dashboards:name=" + this.stackName
 		})
-	}
 
+		this.urlOutput = new cdk.CfnOutput(this, 'Url', {
+			value: this.fargateService.loadBalancer.loadBalancerDnsName
+		  });
+	}
 
     /**
      * getAppLogStream

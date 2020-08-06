@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register'
 import * as cdk from '@aws-cdk/core'
-import { PipelineStack } from '../lib/pipeline-stack'
 import { ApplicationStack } from '../lib/application-stack'
+import * as codepipeline from '@aws-cdk/aws-codepipeline'
+import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
+import * as pipelines from '@aws-cdk/pipelines';
 
 export interface Config {
     PROJECT_NAME: string
@@ -30,8 +32,57 @@ function name(suffix: string) {
     return config.PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
 }
 
+export class CdkpipelinesDemoStage extends cdk.Stage {
+    public readonly urlOutput: cdk.CfnOutput;
+    constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
+        super(scope, id, props);
+        const service = new ApplicationStack(app, name('stg-app'), config.VPC_NAME, 'stg', '/', { env: env })
+        this.urlOutput = service.urlOutput;
+    }
+}
+
+export class PipelineStack extends cdk.Stack {
+    constructor(scope: cdk.Construct, id: string, gitToken: string, github_owner: string, github_repo: string,
+        github_branch: string, props?: cdk.StackProps) {
+        super(scope, id, props)
+
+        /*         const role = new iam.Role(this, 'role', { assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com') })
+                role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess')) */
+
+        const sourceArtifact = new codepipeline.Artifact();
+        const cloudAssemblyArtifact = new codepipeline.Artifact();
+
+        const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
+            cloudAssemblyArtifact,
+            sourceAction: new codepipeline_actions.GitHubSourceAction({
+                actionName: 'GitHub_Source',
+                owner: github_owner,
+                repo: github_repo,
+                branch: github_branch,
+                oauthToken: cdk.SecretValue.secretsManager(gitToken),
+                output: sourceArtifact
+            }),
+            synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
+                sourceArtifact,
+                cloudAssemblyArtifact,
+                subdirectory: 'infrastructure',
+                buildCommand: 'npm run build',
+                environmentVariables: {
+                    'WORKING_BRANCH': {
+                        value: github_branch
+                    }
+                }
+            })
+        });
+
+
+
+
+
+
+    }
+}
+
 new PipelineStack(app, name('pipeline'), 'my_secret_token', 'enricopesce', 'AWSome-pipeline', WORKING_BRANCH, { env: env })
-new ApplicationStack(app, name('stg-app'), config.VPC_NAME, 'stg', '/', { env: env })
-new ApplicationStack(app, name('prd-app'), config.VPC_NAME, 'prd', '/', { env: env })
 
 app.synth()
