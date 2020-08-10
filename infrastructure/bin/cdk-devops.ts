@@ -6,7 +6,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline'
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
 import * as pipelines from '@aws-cdk/pipelines'
 import * as s3 from '@aws-cdk/aws-s3'
-import { CfnOutput } from '@aws-cdk/core'
+import { CfnOutput, FileSystem } from '@aws-cdk/core'
 
 export interface Config {
     PROJECT_NAME: string
@@ -61,6 +61,7 @@ export class ApplicationBirraStage extends cdk.Stage {
     public readonly urlOutput: CfnOutput
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props)
+        console.log(config)
         const service = new ApplicationStack(this, name(id), config.VPC_NAME, id, '/')
         this.urlOutput = service.urlOutput
     }
