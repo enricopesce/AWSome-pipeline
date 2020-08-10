@@ -4,7 +4,8 @@ import * as cdk from '@aws-cdk/core'
 import { ApplicationStack } from '../lib/application-stack'
 import * as codepipeline from '@aws-cdk/aws-codepipeline'
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
-import * as pipelines from '@aws-cdk/pipelines';
+import * as pipelines from '@aws-cdk/pipelines'
+import * as s3 from '@aws-cdk/aws-s3'
 
 export interface Config {
     PROJECT_NAME: string
@@ -33,11 +34,12 @@ function name(suffix: string) {
 }
 
 export class ApplicationStage extends cdk.Stage {
-    public readonly urlOutput: cdk.CfnOutput;
+    public readonly urlOutput: string
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
-        super(scope, id, props);
-        const service = new ApplicationStack(app, name(id), config.VPC_NAME, id, '/', { env: env })
-        this.urlOutput = service.urlOutput;
+        super(scope, id, props)
+        //const service = new ApplicationStack(app, name(id), config.VPC_NAME, id, '/', { env: props?.env })
+        const bucket = new s3.Bucket(this, 'bucket')
+        this.urlOutput = bucket.bucketWebsiteDomainName
     }
 }
 
