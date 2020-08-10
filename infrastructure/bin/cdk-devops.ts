@@ -103,7 +103,7 @@ export class PipelineStack extends cdk.Stack {
         }));
 
 
-        const birra = pipeline.addApplicationStage(new ApplicationBirraStage(this, 'stg', {
+        const birra = pipeline.addApplicationStage(new ApplicationBirraStage(this, 'bevi', {
             env: env
         }));
     }
