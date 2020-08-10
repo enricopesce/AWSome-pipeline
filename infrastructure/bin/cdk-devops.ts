@@ -6,7 +6,6 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline'
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
 import * as pipelines from '@aws-cdk/pipelines'
 import * as s3 from '@aws-cdk/aws-s3'
-import { ENGINE_METHOD_RAND } from 'constants'
 import { CfnOutput } from '@aws-cdk/core'
 
 export interface Config {
@@ -46,18 +45,28 @@ export class MardaStack extends cdk.Stack {
 		  });
 
         }
-}        
-
+}            
 
 export class ApplicationStage extends cdk.Stage {
     public readonly urlOutput: CfnOutput
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props)
         //const service = new ApplicationStack(app, name(id), config.VPC_NAME, id, '/', { env: props?.env })
-        const service = new MardaStack(this, 'merda', { env: props?.env })
+        const service = new MardaStack(this, 'merda')
         this.urlOutput = service.urlOutput
     }
 }
+
+
+export class ApplicationBirraStage extends cdk.Stage {
+    public readonly urlOutput: CfnOutput
+    constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
+        super(scope, id, props)
+        const service = new ApplicationStack(app, name(id), config.VPC_NAME, id, '/')
+        this.urlOutput = service.urlOutput
+    }
+}
+
 
 export class PipelineStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, gitToken: string, github_owner: string, github_repo: string,
@@ -93,12 +102,14 @@ export class PipelineStack extends cdk.Stack {
         const staging = pipeline.addApplicationStage(new ApplicationStage(this, 'stg', {
             env: env
         }));
+
+
+        const birra = pipeline.addApplicationStage(new ApplicationBirraStage(this, 'stg', {
+            env: env
+        }));
     }
 }
 
 new PipelineStack(app, name('pipeline'), 'my_secret_token', 'enricopesce', 'AWSome-pipeline', WORKING_BRANCH, { env: env })
-
-
-new ApplicationStage(app, 'merda')
 
 app.synth()
