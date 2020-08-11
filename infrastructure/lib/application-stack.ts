@@ -24,6 +24,9 @@ export class ApplicationStack extends cdk.Stack {
 
 		const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpc_name })
 
+		console.log("OUTPUT2 ")
+        console.log(JSON.stringify(vpc))
+
 		const web_asset = new ecr_assets.DockerImageAsset(this, 'web_asset', {
 			directory: path.join(__dirname, '../../'),
 			file: 'docker/web/Dockerfile',
