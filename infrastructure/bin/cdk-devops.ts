@@ -62,7 +62,8 @@ export class ApplicationBirraStage extends cdk.Stage {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props)
         console.log(config)
-        const service = new ApplicationStack(this, name(id), config.VPC_NAME, id, '/')
+        console.log(env)
+        const service = new ApplicationStack(this, name(id), config.VPC_NAME, id, '/', { env: env })
         this.urlOutput = service.urlOutput
     }
 }
