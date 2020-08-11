@@ -32,41 +32,12 @@ const app = new cdk.App()
 
 function name(suffix: string) {
     return config.PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
-}
-
-export class MardaStack extends cdk.Stack {
-    public readonly urlOutput: cdk.CfnOutput;
-	constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-        super(scope, id, props)
-        const bucket = new s3.Bucket(this, 'bucket')
-
-		this.urlOutput = new cdk.CfnOutput(this, 'Url', {
-			value: bucket.bucketDomainName
-		  });
-
-        }
-}            
+}     
 
 export class ApplicationStage extends cdk.Stage {
     public readonly urlOutput: CfnOutput
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props)
-        const service = new MardaStack(this, 'merda')
-        this.urlOutput = service.urlOutput
-    }
-}
-
-
-export class ApplicationBirraStage extends cdk.Stage {
-    public readonly urlOutput: CfnOutput
-    constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
-        super(scope, id, props)
-        console.log("OUTPUT ")
-        console.log(JSON.stringify(config))
-        console.log("OUTPUT ")
-        console.log(JSON.stringify(env))
-        console.log("OUTPUT ")
-        console.log(JSON.stringify(props))
         const service = new ApplicationStack(this, name(id), config.VPC_NAME, id, '/', { env: props?.env })
         this.urlOutput = service.urlOutput
     }
@@ -104,7 +75,7 @@ export class PipelineStack extends cdk.Stack {
             }),
         });
 
-        const birra = pipeline.addApplicationStage(new ApplicationBirraStage(this, 'bevi', {
+        const staging = pipeline.addApplicationStage(new ApplicationStage(this, 'stg', {
             env: env
         }));
     }
