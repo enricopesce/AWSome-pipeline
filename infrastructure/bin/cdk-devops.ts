@@ -61,9 +61,10 @@ export class ApplicationBirraStage extends cdk.Stage {
     public readonly urlOutput: CfnOutput
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props)
-        console.log(config)
-        console.log(env)
-        const service = new ApplicationStack(this, name(id), config.VPC_NAME, id, '/', { env: env })
+        console.log("OUTPUT " + config)
+        console.log("OUTPUT " + env)
+        console.log("OUTPUT " + props?.env)
+        const service = new ApplicationStack(this, name(id), config.VPC_NAME, id, '/', { env: props?.env })
         this.urlOutput = service.urlOutput
     }
 }
@@ -99,11 +100,6 @@ export class PipelineStack extends cdk.Stack {
                 }
             }),
         });
-
-        const staging = pipeline.addApplicationStage(new ApplicationStage(this, 'stg', {
-            env: env
-        }));
-
 
         const birra = pipeline.addApplicationStage(new ApplicationBirraStage(this, 'bevi', {
             env: env
