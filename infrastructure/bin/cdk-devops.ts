@@ -31,7 +31,7 @@ const app = new cdk.App()
 
 function name(suffix: string) {
     return config.PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
-}     
+}
 
 export class ApplicationStage extends cdk.Stage {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
@@ -40,11 +40,12 @@ export class ApplicationStage extends cdk.Stage {
     }
 }
 
-export class VpcStack extends cdk.Stack{
-	constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class VpcStack extends cdk.Stack {
+    constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props)
         const vpc = new ec2.Vpc(this, "vpc", { maxAzs: 2 })
-}
+    }
+}   
 
 
 /* 
