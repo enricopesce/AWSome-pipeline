@@ -5,6 +5,7 @@ import { ApplicationStack } from '../lib/application-stack'
 import * as codepipeline from '@aws-cdk/aws-codepipeline'
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
 import * as pipelines from '@aws-cdk/pipelines'
+import * as ec2 from '@aws-cdk/aws-ec2'
 
 export interface Config {
     PROJECT_NAME: string
@@ -36,10 +37,20 @@ export class ApplicationStage extends cdk.Stage {
     public readonly urlOutput: cdk.CfnOutput
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props)
+        const vpc = new ec2.Vpc(this, "vpc", { maxAzs: 2 })
+    }
+}
+
+/* 
+export class ApplicationStage extends cdk.Stage {
+    public readonly urlOutput: cdk.CfnOutput
+    constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
+        super(scope, id, props)
         const service = new ApplicationStack(this, name(id), config.VPC_NAME, id, '/', { env: props?.env })
         this.urlOutput = service.urlOutput
     }
-}
+} */
+
 
 
 export class PipelineStack extends cdk.Stack {
