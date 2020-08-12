@@ -34,12 +34,18 @@ function name(suffix: string) {
 }     
 
 export class ApplicationStage extends cdk.Stage {
-    public readonly urlOutput: cdk.CfnOutput
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props)
-        const vpc = new ec2.Vpc(this, "vpc", { maxAzs: 2 })
+        new VpcStack(this, "vpc")
     }
 }
+
+export class VpcStack extends cdk.Stack{
+	constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props)
+        const vpc = new ec2.Vpc(this, "vpc", { maxAzs: 2 })
+}
+
 
 /* 
 export class ApplicationStage extends cdk.Stage {
@@ -58,8 +64,8 @@ export class PipelineStack extends cdk.Stack {
         github_branch: string, props?: cdk.StackProps) {
         super(scope, id, props)
 
-        const sourceArtifact = new codepipeline.Artifact();
-        const cloudAssemblyArtifact = new codepipeline.Artifact();
+        const sourceArtifact = new codepipeline.Artifact()
+        const cloudAssemblyArtifact = new codepipeline.Artifact()
 
         const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
             cloudAssemblyArtifact,
@@ -82,11 +88,11 @@ export class PipelineStack extends cdk.Stack {
                     }
                 }
             }),
-        });
+        })
 
         const staging = pipeline.addApplicationStage(new ApplicationStage(this, 'stg', {
             env: env
-        }));
+        }))
     }
 }
 
