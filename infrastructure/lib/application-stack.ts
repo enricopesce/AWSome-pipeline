@@ -15,17 +15,18 @@ export class ApplicationStack extends cdk.Stack {
 		props?: cdk.StackProps) {
 		super(scope, id, props)
 
-		console.log("OUTPUT2 ")
+/* 		console.log("OUTPUT2 ")
         console.log(JSON.stringify(vpc_name))
         console.log("OUTPUT2 ")
-        console.log(JSON.stringify(props))
+        console.log(JSON.stringify(props)) */
 
 		//const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpc_name })
 		const vpc = new ec2.Vpc(this, "vpc", { maxAzs: 2 })
-
+		
+/* 
 		console.log("OUTPUT2 ")
         console.log(vpc)
-
+ */
 		const web_asset = new ecr_assets.DockerImageAsset(this, 'web_asset', {
 			directory: path.join(__dirname, '../../'),
 			file: 'docker/web/Dockerfile',
