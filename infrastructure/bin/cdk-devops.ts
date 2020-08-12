@@ -33,12 +33,24 @@ function name(suffix: string) {
     return config.PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
 }
 
+
+
+export class ApplicationStage extends cdk.Stage {
+    public readonly urlOutput: cdk.CfnOutput
+    constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
+        super(scope, id, props)
+        const service = new ApplicationStack(this, name(id), config.VPC_NAME, id, '/')
+        this.urlOutput = service.urlOutput
+    }
+} 
+
+/* 
 export class ApplicationStage extends cdk.Stage {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props)
         new VpcStack(this, "vpc")
     }
-}
+} */
 
 export class VpcStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -46,19 +58,6 @@ export class VpcStack extends cdk.Stack {
         const vpc = new ec2.Vpc(this, "vpc", { maxAzs: 2 })
     }
 }   
-
-
-/* 
-export class ApplicationStage extends cdk.Stage {
-    public readonly urlOutput: cdk.CfnOutput
-    constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
-        super(scope, id, props)
-        const service = new ApplicationStack(this, name(id), config.VPC_NAME, id, '/', { env: props?.env })
-        this.urlOutput = service.urlOutput
-    }
-} */
-
-
 
 export class PipelineStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, gitToken: string, github_owner: string, github_repo: string,
