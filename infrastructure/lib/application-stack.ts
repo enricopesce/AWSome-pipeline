@@ -26,6 +26,12 @@ export class ApplicationStack extends cdk.Stack {
 		console.log("OUTPUT2 ")
 		console.log(vpc)
 				*/
+		
+		const sg = new ec2.SecurityGroup(this, 'sg', {
+			vpc: vpc
+		})
+
+
 
 	}
 }
