@@ -48,7 +48,7 @@ export class ApplicationStage extends cdk.Stage {
         super(scope, id, props)
         new VpcStack(this, "vpc")
     }
-} */
+} 
 
 export class VpcStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -56,6 +56,7 @@ export class VpcStack extends cdk.Stack {
         const vpc = new ec2.Vpc(this, "vpc", { maxAzs: 2 })
     }
 }   
+*/
 
 export class PipelineStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, gitToken: string, github_owner: string, github_repo: string,
