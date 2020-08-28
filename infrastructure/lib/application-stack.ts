@@ -20,8 +20,8 @@ export class ApplicationStack extends cdk.Stack {
         console.log("OUTPUT2 ")
         console.log(JSON.stringify(props)) */
 
-		//const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpc_name })
-		const vpc = new ec2.Vpc(this, "vpc", { maxAzs: 2 })
+		const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpc_name })
+		//const vpc = new ec2.Vpc(this, "vpc", { maxAzs: 2 })
 /* 
 		console.log("OUTPUT2 ")
         console.log(vpc)

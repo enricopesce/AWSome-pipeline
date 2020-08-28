@@ -33,8 +33,6 @@ function name(suffix: string) {
     return config.PROJECT_NAME + "-" + WORKING_BRANCH + "-" + suffix
 }
 
-
-
 export class ApplicationStage extends cdk.Stage {
     public readonly urlOutput: cdk.CfnOutput
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
