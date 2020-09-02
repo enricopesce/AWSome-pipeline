@@ -27,6 +27,8 @@ const env = {
     region: process.env.CDK_DEFAULT_REGION
 }
 
+console.log(env)
+
 const app = new cdk.App()
 
 function name(suffix: string) {
