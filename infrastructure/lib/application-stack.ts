@@ -9,15 +9,7 @@ export class ApplicationStack extends cdk.Stack {
 	constructor(scope: cdk.Construct, id: string, vpc_name: string, props?: cdk.StackProps) {
 		super(scope, id, props)
 
-		console.log("VPC NAME: ")
-		console.log(vpc_name)
-		console.log("PROPS: ")
-		console.log(props)
-
 		const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpc_name })
-
-		console.log("VPC IMPORTED ")
-		console.log(vpc)
 
 		const sg = new ec2.SecurityGroup(this, 'sg', {
 			vpc: vpc
