@@ -70,6 +70,7 @@ export class PipelineStack extends cdk.Stack {
 
         const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
             cloudAssemblyArtifact,
+            crossAccountKeys: false,
             sourceAction: new codepipeline_actions.GitHubSourceAction({
                 actionName: 'GitHub_Source',
                 owner: github_owner,
@@ -98,5 +99,7 @@ export class PipelineStack extends cdk.Stack {
 }
 
 new PipelineStack(app, name('pipeline'), 'my_secret_token', 'enricopesce', 'AWSome-pipeline', WORKING_BRANCH, { env: env })
+
+//new ApplicationStack(app, "test", config.VPC_NAME, { env: env })
 
 app.synth()

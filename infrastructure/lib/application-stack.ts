@@ -14,9 +14,7 @@ export class ApplicationStack extends cdk.Stack {
 		console.log("PROPS: ")
 		console.log(props)
 
-		//const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpc_name })
-
-		const vpc = ec2.Vpc.fromLookup(this, "vpc", {vpcId: "vpc-0c272b2bd54ad04b2"})
+		const vpc = ec2.Vpc.fromLookup(this, "vpc", { vpcName: vpc_name })
 
 		console.log("VPC IMPORTED ")
 		console.log(vpc)

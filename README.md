@@ -158,3 +158,7 @@ You can customize the code inside the docker/code directory
 ## PLEASE GIVE ME FEEDBACKS
 
 ## OPEN A GITHUB ISSUE FOR FIX OR REQUEST
+
+
+env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+    --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess
