@@ -14,11 +14,22 @@ export class PipelineStack extends cdk.Stack {
         const role = new iam.Role(this, 'role', { assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com') })
         role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'))
 
-        const project = new codebuild.PipelineProject(this, 'pipelineProject', {
+        const bucketArtifacts = new AutoDeleteBucket(this, 'artifacts')
+        const bucketCache = new AutoDeleteBucket(this, 'cache')
+
+/*         const project = new codebuild.PipelineProject(this, 'pipelineProject', {
             buildSpec: codebuild.BuildSpec.fromSourceFilename('infrastructure/codebuild/buildspec.yaml'),
-            cache: codebuild.Cache.bucket(
-                new AutoDeleteBucket(this, 'cache')
-            ),
+            cache: codebuild.Cache.bucket(bucketCache),
+            environment: {
+                buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+                privileged: true
+            },
+            role: role
+        }) */
+
+        const buildProject = new codebuild.PipelineProject(this, 'pipelineProject', {
+            buildSpec: codebuild.BuildSpec.fromSourceFilename('infrastructure/codebuild/build.yaml'),
+            cache: codebuild.Cache.bucket(bucketCache),
             environment: {
                 buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
                 privileged: true
@@ -27,8 +38,9 @@ export class PipelineStack extends cdk.Stack {
         })
 
         const source_output = new codepipeline.Artifact()
-        const staging_output = new codepipeline.Artifact()
-        const production_output = new codepipeline.Artifact()
+        const build_output = new codepipeline.Artifact()
+/*         const staging_output = new codepipeline.Artifact()
+        const production_output = new codepipeline.Artifact() */
 
         const source_action = new codepipelineActions.GitHubSourceAction({
             actionName: 'GitHub_Source',
@@ -39,6 +51,21 @@ export class PipelineStack extends cdk.Stack {
             output: source_output
         })
 
+        const build_action = new codepipelineActions.CodeBuildAction({
+            actionName: 'Build',
+            project: buildProject,
+            input: source_output,
+            outputs: [build_output],
+            environmentVariables: {
+                'ENV': {
+                    value: 'stg',
+                },
+                'WORKING_BRANCH': {
+                    value: github_branch
+                }
+            }
+        })
+/* 
         const staging_action = new codepipelineActions.CodeBuildAction({
             actionName: 'Deliver',
             project: project,
@@ -71,9 +98,8 @@ export class PipelineStack extends cdk.Stack {
                     value: github_branch
                 }
             }
-        })
+        }) */
 
-        const bucketArtifacts = new AutoDeleteBucket(this, 'artifacts')
 
         const pipeline = new codepipeline.Pipeline(this, "Pipeline", {
             artifactBucket: bucketArtifacts
@@ -84,7 +110,12 @@ export class PipelineStack extends cdk.Stack {
             actions: [source_action]
         })
 
-        pipeline.addStage({
+         pipeline.addStage({
+            stageName: 'Build',
+            actions: [build_action]
+        })        
+
+/*         pipeline.addStage({
             stageName: 'Staging',
             actions: [staging_action]
         })
@@ -97,7 +128,7 @@ export class PipelineStack extends cdk.Stack {
         pipeline.addStage({
             stageName: 'Production',
             actions: [production_action]
-        })
+        }) */
 
         new cdk.CfnOutput(this, 'LinkCodePipelinePage', {
             value: "https://"

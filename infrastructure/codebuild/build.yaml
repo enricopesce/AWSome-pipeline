@@ -1,0 +1,24 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      docker: 19
+      nodejs: 12
+  pre_build:
+    commands:
+      - 'cd infrastructure'
+      - 'npm install -g aws-cdk'
+      - 'npm install'
+  build:
+    commands:
+      - 'npm run build'
+  post_build:
+    commands:
+      - 'cdk synth "*" --context tier=$ENV --output=~/templates --require-approval never'
+      - 'ls -lart ~/templates'
+cache:
+  paths:
+    - 'infrastructure/node_modules/**/*'
+artifacts:
+  files:
+    - '**/*'
