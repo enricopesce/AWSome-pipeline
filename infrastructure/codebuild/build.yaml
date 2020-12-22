@@ -14,12 +14,13 @@ phases:
       - 'npm run build'
   post_build:
     commands:
-      - 'mkdir ~/templates'
-      - 'cdk synth "*" --context tier=$ENV --output=~/templates --require-approval never'
-      - 'ls -lart ~/templates'
+      - 'echo $CODEBUILD_SRC_DIR'
+      - 'mkdir $CODEBUILD_SRC_DIR/templates'
+      - 'cdk synth "*" --context tier=$ENV --output=$CODEBUILD_SRC_DIR/templates --require-approval never'
+      - 'ls -lart $CODEBUILD_SRC_DIR/templates'
 cache:
   paths:
     - 'infrastructure/node_modules/**/*'
 artifacts:
   files:
-    - '~/templates/**/*'
+    - 'templates/**/*'
