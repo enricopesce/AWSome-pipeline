@@ -14,6 +14,7 @@ phases:
       - 'npm run build'
   post_build:
     commands:
+      - 'mkdir ~/templates'
       - 'cdk synth "*" --context tier=$ENV --output=~/templates --require-approval never'
       - 'ls -lart ~/templates'
 cache:
@@ -21,4 +22,4 @@ cache:
     - 'infrastructure/node_modules/**/*'
 artifacts:
   files:
-    - '**/*'
+    - '~/templates/**/*'
