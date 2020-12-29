@@ -38,8 +38,7 @@ export class ApplicationStage extends cdk.Stage {
     public readonly urlOutput: cdk.CfnOutput
     constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props)
-        const service = new ApplicationStack(this, id, config.VPC_NAME, props)
-        this.urlOutput = service.urlOutput
+        const service = new ApplicationStack(this, id, config.VPC_NAME, id, '/', props)
     }
 }
 
