@@ -1,6 +1,7 @@
 version: "3.7"
 services:
   app:
+    image: bitnami/python:latest
     build:
       context: ./
       dockerfile: docker/app/Dockerfile
@@ -13,6 +14,7 @@ services:
     environment:
       - ENV=local
   web:
+    image: public.ecr.aws/nginx/nginx
     build:
       context: ./
       dockerfile: docker/web/Dockerfile

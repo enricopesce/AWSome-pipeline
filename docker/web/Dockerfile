@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM public.ecr.aws/nginx/nginx
 
 ARG DOCKER_DIR=./docker/web
 ARG FCGI_HOST=127.0.0.1

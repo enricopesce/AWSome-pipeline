@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM public.ecr.aws/bitnami/python
 
 ARG CODE_DIR=./code
 ARG DOCKER_DIR=./docker/app
