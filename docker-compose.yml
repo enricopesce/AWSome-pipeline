@@ -25,4 +25,4 @@ services:
     ports:
       - "80:80"
     environment:
-      - ENV=local
+      - NGINX_PORT=80

@@ -11,4 +11,4 @@ COPY $CODE_DIR /var/www/app
 
 RUN pip install -r requirements.txt
 
-CMD /usr/local/bin/gunicorn -w 4 --bind :8080 --access-logfile - --error-logfile - main:app
+CMD gunicorn -w 4 --bind :8080 --access-logfile - --error-logfile - main:app
