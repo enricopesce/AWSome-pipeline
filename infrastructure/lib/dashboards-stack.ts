@@ -1,6 +1,6 @@
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch'
-import { Construct } from '@aws-cdk/core';
-import * as cdk from '@aws-cdk/core'
+import { Construct } from 'constructs';
+import { aws_cloudwatch } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 
 export interface DashboardEcsProps {
     readonly DashboardName: string
@@ -22,7 +22,7 @@ export class DashboardAlb extends Construct implements DashboardAlbProps {
 
     constructor(scope: Construct, id: string, props: DashboardAlbProps) {
         super(scope, id)
-        const dashboard = new cloudwatch.Dashboard(this, 'albdashboard', {
+        const dashboard = new aws_cloudwatch.Dashboard(this, 'albdashboard', {
             dashboardName: props.DashboardName + "-alb"
         })
 
@@ -38,20 +38,20 @@ export class DashboardAlb extends Construct implements DashboardAlbProps {
     }
 
     private buildAlbWidget(metricName: string, props: DashboardAlbProps, statistic: string = 'avg',
-        period: cdk.Duration = cdk.Duration.minutes(5), widgetName?: string): cloudwatch.GraphWidget {
+        period: Duration = Duration.minutes(5), widgetName?: string): aws_cloudwatch.GraphWidget {
 
         if (widgetName === undefined) {
             widgetName = metricName
         }
 
-        return new cloudwatch.GraphWidget({
+        return new aws_cloudwatch.GraphWidget({
             title: widgetName,
             width: 8,
             height: 6,
-            left: [new cloudwatch.Metric({
+            left: [new aws_cloudwatch.Metric({
                 namespace: 'AWS/ApplicationELB',
                 metricName: metricName,
-                dimensions: {
+                dimensionsMap: {
                     TargetGroup: props.AlbTargetGroupName,
                     LoadBalancer: props.AlbName
                 },
@@ -70,14 +70,14 @@ export class DashboardEcs extends Construct implements DashboardEcsProps {
 
     constructor(scope: Construct, id: string, props: DashboardEcsProps) {
         super(scope, id)
-        const dashboard = new cloudwatch.Dashboard(this, 'ecsdashboard', {
+        const dashboard = new aws_cloudwatch.Dashboard(this, 'ecsdashboard', {
             dashboardName: props.DashboardName + "-ecs"
         })
 
         dashboard.addWidgets(
             this.buildEcsWidget('CPUUtilization', props),
             this.buildEcsWidget('MemoryUtilization', props),
-            this.buildEcsWidget('CPUUtilization', props, 'SampleCount', cdk.Duration.minutes(1), "RunningTasks")
+            this.buildEcsWidget('CPUUtilization', props, 'SampleCount', Duration.minutes(1), "RunningTasks")
         )
 
         for (let stream of props.EcsLogStreams) {
@@ -88,20 +88,20 @@ export class DashboardEcs extends Construct implements DashboardEcsProps {
     }
 
     private buildEcsWidget(metricName: string, props: DashboardEcsProps, statistic: string = 'avg',
-        period: cdk.Duration = cdk.Duration.minutes(5), widgetName?: string): cloudwatch.GraphWidget {
+        period: Duration = Duration.minutes(5), widgetName?: string): aws_cloudwatch.GraphWidget {
 
         if (widgetName === undefined) {
             widgetName = metricName
         }
 
-        return new cloudwatch.GraphWidget({
+        return new aws_cloudwatch.GraphWidget({
             title: widgetName,
             width: 8,
             height: 6,
-            left: [new cloudwatch.Metric({
+            left: [new aws_cloudwatch.Metric({
                 namespace: 'AWS/ECS',
                 metricName: metricName,
-                dimensions: {
+                dimensionsMap: {
                     ClusterName: props.EcsClusterName,
                     ServiceName: props.EcsServicName
                 },
@@ -111,8 +111,8 @@ export class DashboardEcs extends Construct implements DashboardEcsProps {
         })
     }
 
-    private buildLogWidget(logGroupName: string): cloudwatch.LogQueryWidget {
-        return new cloudwatch.LogQueryWidget({
+    private buildLogWidget(logGroupName: string): aws_cloudwatch.LogQueryWidget {
+        return new aws_cloudwatch.LogQueryWidget({
             width: 24,
             height: 6,
             logGroupNames: [logGroupName],
