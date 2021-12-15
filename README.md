@@ -84,7 +84,7 @@ edit the app_config.json file for defining the project name and the existing VPC
 
 ### Deploy the pipeline an get the codepipeline endpoint
 
-You can create a continuous intergration service binded to your current git branch.
+You can create a continuous integration service bonded to your current git branch.
 
 Suppose that you are in the master branch:
 
@@ -93,7 +93,7 @@ git branch --show-current
 master
 ```
 
-You can create the infrastructure based on the current master branch:
+You can create the pipeline triggerable from any commit to master branch:
 
 ```bash
 cdk deploy "*" --context tier=pipeline
@@ -104,26 +104,9 @@ Outputs:
 awsome-master-pipeline.LinkCodePipelinePage = https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/awsome-master-pipeline-PipelineC660917D-11U99LG5Y4H4V/view?region=eu-west-1
 ```
 
-The pipeline after the creation and after every commits in the branch assigned will be triggered. It launches the staging env end, after a manual approval, the production env.
-<<<<<<< HEAD
+The pipeline after the creation and by every commits in the branch will be triggered. It launches the staging env, after a manual approval, the production env.
 
-Alternatively you can deploy staging env from your computer and get the staging http endpoints:
-
-```bash
-cdk deploy "*" --context tier=stg
-
- ✅  awsome-master-stg-app
-
-Outputs:
-awsome-master-stg-app.fargateLoadBalancerDNSB13ECB0B = awsom-farga-1KNVPTS0GNV8J-XXXXXXXXX.eu-west-1.elb.amazonaws.com
-awsome-master-stg-app.LinkEcsClusterPage = https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/clusters/awsome-master-stg-app-cluster611F8AFF-okLxuoDdfc1o/fargateServices
-awsome-master-stg-app.LinkCLoudWatchDashboard = https://eu-west-1.console.aws.amazon.com/cloudwatch//home?region=eu-west-1#dashboards:name=awsome-dashboard-stg-app
-awsome-master-stg-app.fargateServiceURL145CCBE8 = http://awsom-farga-1KNVPTS0GNV8J-XXXXXXXXX.eu-west-1.elb.amazonaws.com
-```
-
-=======
-
-Alternatively you can deploy staging env from your computer and get the staging http endpoints:
+Alternatively you can deploy staging env directly without passing by codepipeline and get the staging http endpoints:
 
 ```bash
 cdk deploy "*" --context tier=stg
@@ -137,8 +120,7 @@ awsome-master-stg-app.LinkCLoudWatchDashboard = https://eu-west-1.console.aws.am
 awsome-master-stg-app.fargateServiceURL145CCBE8 = http://awsom-farga-1KNVPTS0GNV8J-XXXXXXXXX.eu-west-1.elb.amazonaws.com
 ```
 
->>>>>>> master
-or you can deploy the production env from your computer and get the production http endpoints:
+or you can deploy the production env and get the production http endpoints:
 
 ```bash
 cdk deploy "*" --context tier=prd
