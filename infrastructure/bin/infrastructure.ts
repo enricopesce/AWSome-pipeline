@@ -33,7 +33,7 @@ function name(suffix: string) {
 
 switch (tier) {
     case 'pipeline':
-        new PipelineStack(app, name('pipeline'), 'my_secret_token', 'enricopesce', 'AWSome-pipeline', WORKING_BRANCH, { env: env })
+        new PipelineStack(app, name('pipeline'), 'github_token', 'enricopesce', 'AWSome-pipeline', WORKING_BRANCH, { env: env })
         break
     case 'stg':
         new ApplicationStack(app, name('stg-app'), config.VPC_NAME, 'stg', '/', { env: env })

@@ -1,0 +1,20 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      docker: 19
+      nodejs: 12
+  pre_build:
+    commands:
+      - 'cd infrastructure'
+      - 'npm install -g aws-cdk'
+      - 'npm install'
+  build:
+    commands:
+      - 'npm run build'
+  post_build:
+    commands:
+      - 'cdk deploy "*" --context tier=$ENV --require-approval never'
+cache:
+  paths:
+    - 'infrastructure/node_modules/**/*'
